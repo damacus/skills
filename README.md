@@ -18,28 +18,30 @@ Install a single skill:
 npx skills@latest add damacus/skills --skill <skill-name>
 ```
 
-## Skills
+Install the Ruby router globally into the shared agent skill directory:
+
+```sh
+npx skills@latest add damacus/skills --skill ruby --global
+```
+
+## Available Skills
 
 Skills are organized by category under `skills/`.
 
 ### Engineering
 
 - **[go-optimizer](./skills/engineering/go-optimizer/SKILL.md)**
-- **[postgresql-rails-analyzer](./skills/engineering/postgresql-rails-analyzer/SKILL.md)**
-- **[review-ruby-code](./skills/engineering/review-ruby-code/SKILL.md)**
-- **[sandi-metz-reviewer](./skills/engineering/sandi-metz-reviewer/SKILL.md)**
-- **[simplecov](./skills/engineering/simplecov/SKILL.md)**
 
 ### Language
 
-- **[design-patterns-ruby](./skills/language/design-patterns-ruby/SKILL.md)**
 - **[fish-shell](./skills/language/fish-shell/SKILL.md)**
-- **[rails](./skills/language/rails/SKILL.md)**
-- **[rspec](./skills/language/rspec/SKILL.md)**
-- **[rubocop](./skills/language/rubocop/SKILL.md)**
-- **[ruby](./skills/language/ruby/SKILL.md)**
-- **[ruby-lsp](./skills/language/ruby-lsp/SKILL.md)**
-- **[rubycritic](./skills/language/rubycritic/SKILL.md)**
+- **[ruby](./skills/language/ruby/SKILL.md)** — Ruby and Rails router covering
+  RSpec, Minitest, Cucumber, quality, coverage, databases, and tooling.
+
+The `ruby` skill replaces the former standalone Rails, RSpec, SimpleCov,
+RuboCop, RubyCritic, Ruby LSP, design-review, and PostgreSQL analyzer entry
+points. Install and invoke `ruby`; it conditionally loads only the guidance the
+detected project and task require.
 
 ### Operations
 
@@ -77,3 +79,16 @@ Skills are organized by category under `skills/`.
 - `skills/tui/`
 - `skills/ui/`
 - `skills/workflow/`
+
+## Validation
+
+Run the focused authored-source checks from the repository root:
+
+```sh
+task test
+```
+
+This validates the Ruby package, all published skill frontmatter, internal
+links, the README inventory, router targets, bundled scripts, and Markdown for
+the changed Ruby-router documentation. Unrelated legacy Markdown is outside
+this focused gate.
