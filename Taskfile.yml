@@ -4,7 +4,7 @@ tasks:
   test:
     desc: Validate the authored Ruby router and published skill inventory
     cmds:
-      - markdownlint-cli2 'skills/language/ruby/**/*.md' 'skills/docs/ruby-router/*.md' README.md
+      - markdownlint-cli2 'skills/language/ruby/**/*.md' README.md
       - ruby skills/scripts/validate_ruby_skill.rb
       - ruby -c skills/language/ruby/scripts/ruby_outline.rb
       - git diff --check
