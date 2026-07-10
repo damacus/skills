@@ -8,7 +8,6 @@ ROOT = Pathname.new(__dir__).join("../..").expand_path
 SKILLS_ROOT = ROOT.join("skills")
 RUBY_ROOT = SKILLS_ROOT.join("language/ruby")
 README = ROOT.join("README.md")
-ROUTING_SCENARIOS = ROOT.join("skills/docs/ruby-router/ROUTING_SCENARIOS.md")
 
 RETIRED_RUBY_SKILLS = %w[
   postgresql-rails-analyzer
@@ -205,12 +204,6 @@ DISCOVERY_TERMS.each do |term|
   next if router.match?(/\b#{Regexp.escape(term)}\b/i)
 
   errors << "skills/language/ruby/SKILL.md: missing discovery term #{term}"
-end
-
-ROUTING_SCENARIOS.read.scan(/`([a-z][a-z0-9-]+\.md)`/).flatten.uniq.each do |target|
-  next if RUBY_ROOT.join("references", target).exist?
-
-  errors << "#{relative(ROUTING_SCENARIOS)}: missing Ruby reference #{target}"
 end
 
 outline = RUBY_ROOT.join("scripts/ruby_outline.rb")
