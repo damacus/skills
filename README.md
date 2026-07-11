@@ -52,7 +52,7 @@ Skills are organized by category under `skills/`.
 ### Productivity
 
 - **[storyboard](./skills/productivity/storyboard/SKILL.md)**
-- **[translator](./skills/productivity/translator/SKILL.md)**
+- **[translate](./skills/productivity/translate/SKILL.md)**
 
 ### TUI
 
