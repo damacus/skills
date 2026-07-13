@@ -54,7 +54,11 @@ detected project and task require.
 ### Productivity
 
 - **[storyboard](./skills/productivity/storyboard/SKILL.md)**
-- **[translator](./skills/productivity/translator/SKILL.md)**
+- **[translate](./skills/productivity/translate/SKILL.md)**
+
+### Security
+
+- **[security-maintenance](./skills/security/security-maintenance/SKILL.md)**
 
 ### TUI
 
@@ -76,6 +80,7 @@ detected project and task require.
 - `skills/language/`
 - `skills/operations/`
 - `skills/productivity/`
+- `skills/security/`
 - `skills/tui/`
 - `skills/ui/`
 - `skills/workflow/`
