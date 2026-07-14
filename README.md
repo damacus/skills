@@ -30,7 +30,9 @@ Skills are organized by category under `skills/`.
 
 ### Engineering
 
+- **[cli-design](./skills/engineering/cli-design/SKILL.md)**
 - **[go-optimizer](./skills/engineering/go-optimizer/SKILL.md)**
+- **[structure-codebase](./skills/engineering/structure-codebase/SKILL.md)**
 
 ### Language
 
@@ -70,6 +72,8 @@ detected project and task require.
 
 ### Workflow
 
+- **[adaptive-model-routing](./skills/workflow/adaptive-model-routing/SKILL.md)**
+- **[gh-address-comments](./skills/workflow/gh-address-comments/SKILL.md)**
 - **[github-pr](./skills/workflow/github-pr/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
