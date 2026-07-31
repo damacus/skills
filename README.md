@@ -77,6 +77,7 @@ detected project and task require.
 - **[github-pr](./skills/workflow/github-pr/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
+- **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
 
 ## Layout
 
