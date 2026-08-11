@@ -63,5 +63,14 @@ branch of behavior.
   wrong reason.
 - Reproduce randomized failures with the reported seed.
 
+Watch for four recurring test smells:
+
+- **Obscure tests** hide essential setup or intent far from the assertion.
+- **Fragile tests** fail when unrelated shared setup or implementation details
+  change.
+- **Erratic tests** depend on order, time, asynchronous races, leaked state, or
+  uncontrolled external systems.
+- **Test hooks** put test-only branches or behavior into production code.
+
 A coverage increase is evidence of execution, not proof that behavior is well
 specified. Use [coverage.md](coverage.md) when coverage itself is in scope.

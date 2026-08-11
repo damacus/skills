@@ -26,6 +26,16 @@ Useful fallback searches include exact class/module declarations, method
 definitions, and word-bounded call names. Inspect ambiguous results rather than
 assuming text matches are semantic references.
 
+## Trace a User Flow
+
+For a feature or user action, start at every route, command, event, or scheduled
+entry point. Follow success and failure paths through authorization,
+controllers, models or services, callbacks, jobs, mailers, broadcasts, storage,
+and external systems. Record the decisions that change the path and side
+effects that outlive the request. Consult local Git history when the code alone
+cannot explain a surprising constraint; do not fetch remotes just to narrate a
+flow.
+
 ## Dynamic Ruby and Rails
 
 Account for references hidden in:
