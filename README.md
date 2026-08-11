@@ -75,6 +75,7 @@ detected project and task require.
 - **[adaptive-model-routing](./skills/workflow/adaptive-model-routing/SKILL.md)**
 - **[gh-address-comments](./skills/workflow/gh-address-comments/SKILL.md)**
 - **[github-pr](./skills/workflow/github-pr/SKILL.md)**
+- **[persistent-team-bootstrap](./skills/workflow/persistent-team-bootstrap/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
 - **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
