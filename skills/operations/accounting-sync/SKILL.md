@@ -13,7 +13,8 @@ This skill automates the workflow of matching bank transactions with their corre
 Run this before any dry-run or real-mode work. If either Spark or FreeAgent is unavailable, stop and report the blocker. Do not continue to mailbox searches, FreeAgent reads, Paperless checks, or local file staging.
 
 - `spark accounts`
-  - Required: Spark Desktop is running, CLI access is enabled, and these read-only mail accounts are listed: `dan.m.webb@gmail.com` (Gmail), `dan.webb@damacus.io` (damacus.io), and `daniel.webb@equalexperts.com` (EE).
+  - Required: Spark Desktop is running, CLI access is enabled, and the accounting-evidence account `dan.webb@damacus.io` (damacus.io) is listed.
+  - Optional: `dan.m.webb@gmail.com` (personal Gmail) and `daniel.webb@equalexperts.com` (EE) may be listed when their scoped workflows are needed; do not block routine accounting sync if either is absent.
   - Run through keychain/network-capable execution when the sandbox cannot reach the Spark Desktop bridge.
 - `freeagent-cli auth status`
   - Required: exit code 0 and `expired=false`.
