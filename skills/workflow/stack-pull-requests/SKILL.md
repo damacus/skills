@@ -6,7 +6,8 @@ description: >-
   the stack safely. Use when a change is too large for effective review, later work must continue
   on an evolving baseline before earlier pull requests merge, AI-generated code needs deliberate
   review boundaries, or the user mentions stacked PRs, PR stacks, dependent PRs, gh-stack,
-  bottom-up review, or splitting implementation across branches.
+  bottom-up review, cross-fork stacks, fork-based dependent PRs, or splitting implementation
+  across branches.
 ---
 
 <!-- markdownlint-configure-file {"MD013":{"line_length":100,"code_blocks":false,"tables":false}} -->
@@ -24,7 +25,7 @@ branch. Use a stack only when ordered branches materially improve review quality
 dependent work to continue before a lower pull request lands, without weakening verification,
 deployability, or comprehension.
 
-GitHub's native stacked pull requests are currently a private preview and use the official
+GitHub's native stacked pull requests are currently a public preview and use the official
 `github/gh-stack` CLI extension. Read [references/source-notes.md](references/source-notes.md) and
 check current official documentation plus live `gh stack --help` output before using
 preview-specific commands. A portable dependent-branch chain remains an option when native stacks
@@ -67,6 +68,7 @@ Choose a stack only when all of these hold:
 - Expected rebase, CI, and re-review cost is lower than the review or lead-time benefit.
 - The repository can run trustworthy required checks for every boundary.
 - The team and available tooling can support dependent branches and cascading updates.
+- Every native stack branch can live in one repository and its owner can push updates there.
 
 Prefer one pull request or independent trunk-based pull requests when any of these hold:
 
@@ -153,7 +155,9 @@ cycles when cleanup must wait for consumers to move.
 Before creating branches or pull requests:
 
 - identify the trunk branch and repository branch-naming contract;
-- determine whether native stacked pull requests are enabled or the chain will be unlinked;
+- identify whether each head branch is in the target repository or a contributor fork;
+- verify who can push, rewrite, and delete every proposed stack branch;
+- determine whether native stacked pull requests are available or the chain will be unlinked;
 - inspect required workflows, branch filters, rulesets, CODEOWNERS, and merge-queue behavior;
 - confirm each boundary produces every required status it needs;
 - ensure merge-queue workflows include `merge_group` when GitHub Actions checks are required;
@@ -176,6 +180,7 @@ Use a compact map before implementation:
 
 **Mode**: Single PR | Independent PRs | Stacked PRs
 **Stack scope**: Intra-slice | Cross-slice | N/A
+**Repository topology**: Same repository | Fork-based
 **Reason**: [Why this shape earns its cost]
 **Story scope**: [Fixed actor, outcome, and exclusions]
 **Done when**: [Cumulative acceptance or terminal gate]
@@ -226,19 +231,62 @@ and release state.
 
 ### Native GitHub Stack
 
-Use this only when stacked pull requests are enabled for the repository and the official extension
-is already installed or the user authorizes installation.
+Use this only when every branch is in the same repository and the official extension is already
+installed or the user authorizes installation. Cross-fork stacks are not supported.
 
 1. Check `gh auth status`, `gh extension list`, and `gh stack --help`.
 2. Use live help and current official documentation for `init`, `add`, `submit`, `sync`, `rebase`,
    `modify`, `push`, `checkout`, and navigation behavior.
 3. Confirm each submitted pull request has the intended branch below it as its base and appears in
    the expected GitHub stack.
-4. Do not rely on a remembered `gh stack merge` workflow. At the time of this adaptation, the
-   extension reports that command as unimplemented; verify current capability before every merge.
+4. Use current `gh stack merge` behavior for an approved prefix or full-stack merge. Outside a
+   merge queue, the selected merge is all-or-nothing. A merge queue may process the pull requests
+   in separate groups, so verify repository rules and queue behavior first.
 
-Do not install extensions, enable repository previews, rewrite branches, or merge merely because
+Do not install extensions, change repository settings, rewrite branches, or merge merely because
 this skill is active.
+
+### Fork-Based Contributions
+
+GitHub native stacks cannot contain branches from different repositories. A contributor working
+from a fork therefore cannot make a native stack whose pull requests merge into the upstream
+repository. Local stack tooling can still manage branch lineage, but it cannot remove this GitHub
+server boundary.
+
+Choose a workaround in this order:
+
+1. **One upstream pull request with reviewable commits.** Keep the complete change in one verified
+   pull request, make each commit a coherent layer, and ask reviewers to review commit by commit.
+   Prefer this when separate merge boundaries are not essential.
+2. **Serial upstream pull requests.** Open only the bottom fork pull request against trunk. After
+   it lands, rebase or replay only the next boundary onto updated trunk, verify it, and open the
+   next pull request. This preserves focused diffs and normal fork security at the cost of overlap.
+3. **Maintainer-mirrored branches.** When concurrent native review is materially valuable, an
+   authorized maintainer can fetch the contributor's commits and push clearly namespaced branches
+   into the upstream repository, then create the native stack there. Preserve commit authorship,
+   agree who owns updates, and delete the temporary branches after landing. Do not grant repository
+   write access solely to obtain stacked-pull-request UI.
+4. **Cumulative fork pull requests.** Open each fork branch against upstream trunk and mark upper
+   pull requests as dependent drafts. Their diffs include lower work until earlier boundaries land,
+   so provide explicit branch-to-branch comparison instructions and review order. After every lower
+   merge, rebuild the next branch from updated trunk with only its owned commits, rerun checks, and
+   verify the focused diff before marking it ready.
+
+For parallel focused review without upstream branch writes, pull requests may be opened inside the
+contributor's fork between adjacent branches. Treat these as review-only: promote each boundary to
+an upstream pull request serially after its prerequisite lands.
+
+Do not assume an upper fork pull request will automatically become focused after a lower pull
+request merges. Squash and rebase merge strategies can rewrite ancestry. Explicitly replay only the
+upper boundary onto current trunk and inspect the resulting diff.
+
+Every fork workaround must state:
+
+- which pull request is currently eligible to merge upstream;
+- the bottom-to-top dependency and review order;
+- who owns each branch and may rewrite it;
+- how upper branches are rebuilt after lower merges; and
+- whether fork-originated CI lacks secrets, write tokens, or automatic workflow approval.
 
 ### Portable Dependent Pull Requests
 
@@ -301,6 +349,8 @@ obligations are satisfied.
 - Is every boundary coherent, verified, and safe in its cumulative state?
 - Does each behavior receive its first test in the boundary that introduces it?
 - Are native and portable stack semantics explicitly distinguished?
+- Was same-repository versus fork topology checked before choosing native stacking?
+- Does any fork workaround name branch ownership, merge eligibility, and rebuild procedure?
 - Were lower-owned fixes made downstack and propagated upward?
 - Are review order, merge order, release state, and authorization explicit?
 - Would the stack still be worthwhile after counting rebase, CI, and re-review cost?
