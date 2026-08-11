@@ -76,6 +76,14 @@ safe and representative.
 Different test frameworks and quality tools can coexist. Route by the files and
 behavior being changed, not by assuming one tool owns the whole repository.
 
+## Map Prior Art
+
+Before introducing a new pattern or boundary, search for how the repository
+already handles the concern. Identify the dominant approach, meaningful
+exceptions, relevant tests, and whether recent Git history shows a settled
+convention or an active migration. Extend the established pattern when it fits;
+do not copy an inconsistency merely because it already exists.
+
 ## Focused Command Discovery
 
 Before running a broad task, determine whether the wrapper accepts a path,
