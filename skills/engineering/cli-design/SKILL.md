@@ -111,6 +111,50 @@ Choose the smallest output contract the CLI needs. A common hierarchy is:
 - Output tailored for terminal width
 - May change between versions — this is **not** a contract
 
+#### Literal Terminal Output Is Not Markdown
+
+Before choosing formatting syntax, verify what actually renders the output.
+Most CLIs print literal terminal text: Markdown markers such as `#`, `**`,
+backticks, and pipe-table separators will be shown verbatim unless the output
+is deliberately passed through a Markdown renderer.
+
+For literal terminal output:
+
+- use plain labels, spacing, ASCII rules, and explicitly padded columns
+- use ASCII art sparingly when it provides useful identity or hierarchy
+- calculate column widths from both headers and values; do not rely on Markdown
+  table syntax to align columns
+- replace embedded newlines, tabs, and delimiter characters before rendering a
+  row so one value cannot break the table
+- test table alignment structurally by asserting that every row's column
+  boundaries occur at the same character positions
+- render representative long errors in tests and inspect the actual terminal
+  output, not only string fragments
+
+Do not assume an output mode named `markdown` proves that users see rendered
+Markdown. Check the final presentation path. If the CLI writes directly to a
+terminal, design and test it as literal terminal text.
+
+#### Status Output Should Summarize, Not Dump
+
+A human-facing status command should present the smallest useful operational
+summary:
+
+- identity and version
+- component status
+- concise, actionable details for unhealthy components
+- humanized capacity and timestamps where relevant
+
+Avoid raw nested payloads, null error fields, internal service addresses, raw
+byte counts, and implementation-only URLs in the default view. Keep the full
+response available through structured output such as `--json`.
+
+Keep aggregate language evidence-based. A component error does not
+automatically mean the whole installation, authentication check, or command
+failed. Prefer showing the failure on the affected component row over a broad
+banner such as `Needs attention` unless the product has a documented rule for
+that aggregate state.
+
 ### `--plain`: Grep/Awk-Friendly
 
 - One record per line, no formatting, no colors
@@ -433,6 +477,8 @@ When in doubt, add alongside — don't modify. Deprecate with stderr warnings be
 | 9 | Handlers that exit the process directly | Let the entry point decide. Handlers return errors as data |
 | 10 | Non-zero exit without stderr explanation | Scripts need both the code and the reason |
 | 11 | Verbose default output | A single test run can generate 419KB. Support `--fields`, `--quiet`, `--json` |
+| 12 | Printing Markdown syntax to a literal terminal | Users see raw `**`, backticks, and broken pipe tables. Use terminal-native formatting unless a renderer is confirmed |
+| 13 | Inferring global failure from one component | Overstates the result and confuses users. Keep failures scoped unless aggregate semantics are explicitly defined |
 
 ---
 
@@ -449,6 +495,10 @@ After designing or reviewing a CLI:
 - [ ] Progress/spinners go to stderr, never stdout
 - [ ] `NO_COLOR`, `TERM=dumb`, and `--no-color` respected
 - [ ] Piped output contains zero ANSI escape codes
+- [ ] Literal terminal output contains no accidental Markdown syntax
+- [ ] Text-table rows have identical tested column-boundary positions
+- [ ] Status summaries keep component failures scoped and evidence-based
+- [ ] Default status output omits internal addresses, null errors, and raw capacity values
 - [ ] Success output includes next-action guidance
 - [ ] Existing flags, exit codes, output fields never removed or renamed
 - [ ] JSON schema is versioned (additions safe, removals breaking)
