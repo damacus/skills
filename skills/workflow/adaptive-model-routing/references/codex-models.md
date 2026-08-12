@@ -1,58 +1,69 @@
 # Codex Model Mapping
 
-Use this reference for Codex model names and reasoning efforts available in the current runtime.
-Revalidate the tool metadata when models or effort levels change.
+Use this reference for Codex model names and reasoning efforts available in the
+active runtime. Revalidate tool metadata when models or effort levels change.
+Never infer global availability from one task, spawn result, account, or
+runtime.
 
 ## Model Roles
 
-| Model | Role | Good default work |
-|-------|------|-------------------|
-| `gpt-5.6-sol` | Frontier judgment and complex integration | Architecture, decomposition, high-risk review, ambiguous debugging, final synthesis |
-| `gpt-5.6-terra` | Balanced implementation and reasoning | Bounded multi-file changes, nontrivial refactors, focused diagnosis, routine independent review |
-| `gpt-5.6-luna` | Fast, economical execution | Mechanical edits, repetitive changes, focused research, exact-pattern implementation, test expansion |
+- `gpt-5.6-luna` is the fastest and most affordable owner. Use it for clear,
+  low-risk work, established patterns, bounded implementation, test expansion,
+  and routine repository work.
+- `gpt-5.6-terra` is the balanced everyday judgment tier. Use it for unfamiliar
+  code, local design choices, nontrivial refactors, exploratory diagnosis, and
+  routine independent review.
+- `gpt-5.6-sol` is the frontier judgment tier. Use it for broad architecture,
+  consequential ambiguity, sensitive decisions, and high-blast-radius review.
 
-## Reasoning Efforts
+## Reasoning Effort
 
-- Sol supports `low`, `medium`, `high`, `xhigh`, `max`, and `ultra`.
-- Terra supports `low`, `medium`, `high`, `xhigh`, `max`, and `ultra`.
-- Luna supports `low`, `medium`, `high`, `xhigh`, and `max`.
+Use only effort levels advertised for the selected model by the active runtime.
+OpenAI recommends `medium` as a balanced starting point and `low` for
+latency-sensitive workloads. This skill uses these practical defaults:
 
-Use effort to tune within a model before jumping multiple tiers:
+- Luna `medium` for clear, low-risk, objectively testable work.
+- Luna `high` for sustained reasoning within clear boundaries.
+- Terra `medium` for local judgment, discovery, or unclear diagnosis.
+- Terra `high` for difficult but bounded implementation or diagnosis.
+- Sol `medium` for frontier judgment, consequential ambiguity, or high risk.
+- Increase Sol one level when evidence shows current effort is insufficient.
 
-| Need | Typical choice |
-|------|----------------|
-| Fast deterministic execution | Luna `medium` |
-| Narrow code change with some reasoning | Luna `high` |
-| Substantive bounded implementation | Terra `medium` or `high` |
-| Initial judgment and final integration | Sol `high` |
-| Cross-cutting ambiguity or high risk | Sol `xhigh` or `max` |
-| Exceptional, consequential, unresolved judgment | Sol `ultra` |
-
-`ultra` is a reserve tier. Do not use it as the routine starting point when `high` can frame the
-task and expose whether more reasoning is needed.
+Tune effort before changing tiers when the model is appropriate but needs more
+or less thinking. Change tiers when the nature of the judgment changes. Do not
+use `high`, `xhigh`, `max`, or `ultra` as prestige settings.
 
 ## Practical Routing Sequence
 
 ```text
-Sol high: inspect, judge, decompose
-    |
-    +-- Luna medium/high: mechanical or tightly specified task
-    |
-    +-- Terra medium/high: substantive bounded task
-    |
-    `-- Sol xhigh/max/ultra: unresolved or high-risk task
+Clear + low risk + objective checks
+    `-- Luna medium/high: own, implement, verify, finish
 
-Sol high: review, integrate, verify, synthesize
+Local judgment, discovery, or ambiguous failure
+    `-- Terra medium/high: clarify, implement, review, or return work to Luna
+
+Consequential ambiguity, broad architecture, or high risk
+    `-- Sol medium: judge first; increase effort only with evidence
 ```
 
-The parent model does not need to change identity mid-task. In Codex, the usual implementation is
-to keep the parent on Sol and select a lower model plus reasoning effort when spawning a bounded
-worker. Escalate by returning judgment to the parent or spawning a stronger reviewer when needed.
+No tier is required at both ends of every task. Add review for risk,
+uncertainty, or integration needs, not because a lower-cost model did the work.
 
-## Source Rationale
+## Availability Fallback
 
-This policy adapts Simon Willison's observation that judgment, review, and synthesis benefit from
-the strongest model while bounded implementation can often move to a less expensive model:
+If Luna is not advertised, use Terra at the closest suitable advertised
+effort. If Terra is not advertised or the task exceeds it, use Sol. Keep the
+same scope, permissions, and acceptance criteria when changing models. State
+only that the preferred model is unavailable in the active runtime; do not
+claim it is globally unavailable.
 
-- [Fable's judgement](https://simonwillison.net/2026/Jul/3/judgement/)
-- [The new GPT-5.6 family: Luna, Terra, Sol](https://simonwillison.net/2026/Jul/9/gpt-5-6/)
+## OpenAI Guidance
+
+OpenAI describes Luna as the fastest and most cost-efficient tier, Terra as the
+balance of intelligence and cost for everyday work, and Sol as the
+frontier-capability tier. OpenAI recommends choosing by workload rather than
+defaulting to the most capable model, starting reasoning at `medium` for
+balance, and testing lower effort where latency matters.
+
+- [Model guidance](https://developers.openai.com/api/docs/guides/latest-model)
+- [GPT-5.6 announcement](https://openai.com/index/gpt-5-6/)
