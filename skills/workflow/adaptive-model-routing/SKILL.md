@@ -1,139 +1,170 @@
 ---
 name: adaptive-model-routing
 description: >-
-  Choose and revise Codex model and reasoning effort for multi-stage engineering work. Use when
-  deciding between Sol, Terra, and Luna; balancing judgment, cost, and latency; delegating bounded
-  implementation or research to subagents; planning a model handoff; or escalating work after
-  uncertainty, risk, or failed attempts increase. Apply at the start of substantial coding tasks
-  that have independently executable work, not to trivial tasks where delegation overhead exceeds
-  the work.
+  Choose and revise Codex model and reasoning effort for engineering work. Use
+  when deciding between Sol, Terra, and Luna; balancing judgment, cost, and
+  latency; assigning end-to-end work or bounded subtasks; planning a model
+  handoff; or escalating after uncertainty, risk, or failed attempts increase.
+  Apply at the start of substantial work and whenever its shape changes.
 ---
 
 # Adaptive Model Routing
 
-Keep the strongest necessary model in the judgment loop. Delegate bounded execution to the least
-expensive model that can complete it reliably. Reassess at every handoff; model selection is a
-risk decision, not a one-way countdown.
+Choose the fastest, most affordable model that can own the work reliably. Route
+from uncertainty, blast radius, and verification quality rather than task size
+or model prestige. Reassess when the work changes shape; escalation is
+evidence-based, not automatic.
 
-This skill governs model choice and handoffs. It does not broaden the user's authorization, permit
-unrequested external actions, or override repository instructions. The parent agent retains
-ownership of scope, architecture, integration, verification, and the final answer.
+This skill governs model choice and handoffs. It does not broaden the user's
+authorization, permit unrequested external actions, or override repository
+instructions. A model may own a suitable task end to end, including
+implementation, verification, and the final report.
 
-Read [references/codex-models.md](references/codex-models.md) for the current Codex-specific model
-and reasoning-effort mapping.
+Read [references/codex-models.md](references/codex-models.md) for the current
+Codex-specific model and reasoning-effort mapping. Use only models and efforts
+advertised by the active runtime. If a preferred model is unavailable, use the
+next suitable available tier without making a global availability claim.
 
 ## Core Workflow
 
-### 1. Start with Judgment
+### 1. Judge the Work Shape
 
-Use Sol at `high` for the initial pass on substantial work:
+Before choosing a model, establish:
 
-- Read repository instructions and the exact user request.
-- Establish scope, constraints, risks, existing contracts, and verification authority.
-- Decide whether the work is separable enough to delegate.
-- Produce bounded tasks with explicit ownership and acceptance criteria.
+- How clear are the objective, scope, repository rules, and acceptance
+  criteria?
+- How much local design or discovery remains?
+- What is the blast radius if the model makes a plausible but wrong choice?
+- Are failures cheap, objective, and reversible?
+- Does the work touch security, permissions, money, destructive operations,
+  concurrency, public contracts, deployments, or irreversible data?
 
-Increase Sol to `xhigh`, `max`, or `ultra` only when the decision itself warrants it. Examples
-include cross-system architecture, high-stakes security or data integrity, ambiguous incident
-diagnosis, large migrations, conflicting evidence, or repeated failed approaches.
+Do not start every substantial task with Sol. A clear task should not pay a
+frontier-model tax just because it spans several files. Complexity by volume is
+not complexity by judgment.
 
-Do not use a high-effort Sol pass for a self-evident one-file edit merely to satisfy a ritual.
+### 2. Choose the Initial Route
 
-### 2. Build a Judgment Packet
+- Use Luna `medium` for clear, low-risk work with established patterns and
+  objective checks.
+- Use Luna `high` when the same conditions apply but implementation requires
+  sustained reasoning or is substantially larger.
+- Use Terra `medium` for some discovery, unfamiliar code, local design
+  judgment, or unclear failure diagnosis.
+- Use Terra `high` for difficult but bounded implementation, refactoring, or
+  hypothesis-led debugging.
+- Use Sol `medium` for broad architecture, consequential ambiguity, high blast
+  radius, or sensitive decisions.
+- Increase Sol one effort level at a time when evidence shows that `medium` is
+  insufficient.
 
-Downshift only after the parent can give the worker a self-contained packet:
+Luna may own suitable work end to end. It does not require a Sol framing pass
+or a Terra or Sol review merely because it is Luna. Multi-file work may remain
+with Luna when the pattern and checks are clear. Prefer Luna aggressively when
+correctness is cheap to verify.
 
-1. Objective and user-visible outcome.
-2. Owned files, modules, or read-only question.
-3. Relevant repository rules and established patterns.
-4. Constraints and actions that are out of scope.
-5. Acceptance criteria and exact verification commands.
-6. Known risks, assumptions, and unresolved questions.
-7. Escalation conditions that require returning to the parent.
+Terra is the everyday judgment tier. Start there when the task cannot yet be
+reduced to mechanical or tightly specified execution. Escalate Luna to Terra
+when implementation exposes meaningful design choices, unfamiliar behavior,
+or ambiguous failures.
 
-If the packet still asks the worker to discover the architecture, redefine scope, or choose among
-high-impact alternatives, keep that work with Sol first.
+Sol is for frontier judgment, not routine ceremony. When the task genuinely
+routes to Sol, start at `medium` and increase effort only when the evidence
+warrants it.
 
-### 3. Route the Execution
+### 3. Keep Ownership Proportionate
 
-| Work shape | Default route |
-|------------|---------------|
-| Mechanical edits, formatting, renames, fixtures, repetitive tests, focused read-only lookup | Luna `medium` |
-| Narrow implementation with exact files, established pattern, and strong tests | Luna `high` |
-| Bounded multi-file implementation, nontrivial refactor, or hypothesis-led debugging | Terra `medium` or `high` |
-| Cross-cutting design, unclear ownership, public contract change, or complex integration | Sol `high` or `xhigh` |
-| High-stakes security, destructive migration, concurrency, auth, financial correctness, or repeated failure | Sol `xhigh`, `max`, or `ultra` |
+An end-to-end owner must have:
 
-Prefer Luna when success is cheaply and objectively testable. Prefer Terra when the task still
-requires local design judgment. Keep Sol when a wrong local choice would reshape the system or
-create expensive rework.
+1. The objective and user-visible outcome.
+2. Relevant repository rules, owned scope, and actions that are out of scope.
+3. Acceptance criteria and project-native verification.
+4. Known risks and escalation conditions.
 
-Delegation must save more context, latency, or cost than it adds in briefing and review overhead.
-Keep tiny, tightly coupled, or inherently serial work in the parent.
+This can be established directly from the request and repository. Do not
+require a stronger model to manufacture a formal judgment packet when the work
+is already clear.
 
-### 4. Review at the Right Level
+Use delegation only when parallelism or context isolation saves more time or
+cost than briefing and review add. Keep tiny, tightly coupled, or inherently
+serial work with the active owner.
 
-The parent reviews every delegated result before integration.
+### 4. Review by Risk
 
-- Check the diff or evidence against the judgment packet, not merely the worker's summary.
-- Run proportionate project-native verification.
-- Use Terra for an independent routine review when the contract is clear and risk is moderate.
-- Use Sol for architecture, security, compatibility, destructive changes, or whole-branch review.
-- Return a failed review to a bounded worker only when the correction is clear. Otherwise escalate
-  the diagnosis and decision to Sol.
+Independent review is driven by consequence and uncertainty, not model
+identity.
 
-Never let the implementing worker be the sole authority that its work is complete.
+- A Luna owner may run the checks and complete a low-risk task without
+  mandatory Terra or Sol review.
+- Use Terra for routine independent review when local judgment or unfamiliar
+  implementation makes a second pass worthwhile.
+- Use Sol for architecture, security, compatibility, destructive changes,
+  sensitive decisions, or whole-branch review with a high blast radius.
+- Inspect diffs and evidence directly whenever review is required; confidence
+  statements are not verification.
+
+Never add a stronger reviewer solely to compensate for choosing Luna. If every
+Luna task needs Sol at both ends, the route has lost its speed and cost
+advantage.
 
 ### 5. Escalate Dynamically
 
-Stop and move up a tier when any of these appear:
+Move up a tier, increase effort, or request review when:
 
-- The task must broaden beyond its owned files or acceptance criteria.
-- Repository behavior contradicts the judgment packet.
-- A public API, schema, migration, permission, or compatibility decision is newly exposed.
-- The same verification failure survives two evidence-based attempts.
-- The worker cannot explain the failure or is guessing at hidden state.
-- The change touches authentication, authorization, secrets, destructive operations, financial
-  correctness, concurrency, deployment control, or irreversible data changes.
-- Integration reveals conflicting edits or a cross-task architectural decision.
+- The task broadens beyond its established scope or acceptance criteria.
+- Repository behavior contradicts the working model.
+- A public API, schema, migration, permission, or compatibility decision
+  appears.
+- Verification is subjective, missing, expensive, or cannot localize failure.
+- The same failure survives two evidence-based attempts.
+- The owner is guessing at hidden state or cannot explain the failure.
+- The work touches authentication, authorization, secrets, destructive
+  operations, financial correctness, concurrency, deployment control, or
+  irreversible data changes.
+- Integration exposes conflicting edits or a cross-task architectural
+  decision.
 
-Escalation can mean Luna to Terra, Terra to Sol, or higher Sol reasoning effort. It does not always
-mean `ultra`; choose the smallest increase that addresses the uncertainty.
+Escalation normally means Luna to Terra, Terra to Sol, or one higher reasoning
+level. Do not jump straight to maximum effort when a smaller increase addresses
+the uncertainty. A stronger model may return the clarified task to Luna when
+the remaining work becomes bounded and objectively testable.
 
-## Parent and Worker Contract
+## Owner and Worker Contract
 
-The parent must:
+Every owner must:
 
-- Retain the full user and repository context.
-- Assign non-overlapping ownership.
-- Keep architecture and integration decisions centralized.
-- Inspect results directly and own final validation.
-- Continue locally if delegation is unavailable or costs more than it saves.
+- Preserve the full user and repository constraints relevant to its scope.
+- Preserve unrelated work and stay within authorized boundaries.
+- Inspect current state rather than relying on a stale handoff.
+- Run proportionate project-native verification.
+- Report evidence, changed files, checks, and unresolved risks.
+- Escalate instead of silently making a newly exposed high-impact decision.
 
-The worker must:
-
-- Stay within the judgment packet.
-- Preserve unrelated work and accommodate concurrent edits.
-- Report evidence, changed files, verification, and unresolved risks.
-- Escalate instead of silently making a high-impact decision.
+When delegating, assign non-overlapping ownership and retain responsibility for
+integration across workers. Delegation does not require the parent to be Sol.
 
 ## Anti-Patterns
 
-- Starting every task at Sol `ultra` regardless of ambiguity or risk.
-- Delegating an open-ended architecture question to Luna.
-- Choosing models solely by line count; a one-line auth change can be high risk.
-- Downshifting before the task has explicit acceptance criteria.
-- Creating many subagents for serial or overlapping work.
-- Accepting a worker's confidence statement instead of inspecting evidence.
-- Leaving Sol to perform every mechanical edit after the decisions are settled.
-- Treating escalation as failure; it is the intended response to newly discovered uncertainty.
+- Starting every substantial task with Sol, even at `medium`.
+- Starting Sol at `high` before evidence shows `medium` is insufficient.
+- Treating Luna as mechanical-only when work is clear and objectively testable.
+- Requiring Terra or Sol to review every Luna result regardless of risk.
+- Choosing models solely by line count; a one-line authorization change can be
+  high risk.
+- Keeping Luna after ambiguity, design judgment, or sensitive decisions emerge.
+- Using Terra merely because a change spans several files.
+- Creating many agents for serial or overlapping work.
+- Treating escalation as failure rather than the response to new evidence.
 
 ## Completion Check
 
-- Did the strongest necessary model own the important judgment?
-- Was each delegated task bounded enough for its assigned model?
-- Did the handoff include files, constraints, acceptance criteria, and verification?
-- Were model choices based on uncertainty and blast radius rather than prestige?
-- Did the parent inspect, integrate, and validate the result?
+- Was the initial model chosen from uncertainty, blast radius, and verification
+  quality?
+- Did clear, low-risk work avoid an unnecessary Sol or Terra tax?
+- Was Luna allowed to own suitable substantial work end to end?
+- Did Terra take over when local judgment or unclear diagnosis emerged?
+- If Sol was needed, did it start at `medium` and increase only with evidence?
+- Was independent review proportionate to risk rather than model identity?
 - Were escalation triggers acted on when the task changed shape?
-- Would delegation still look worthwhile after counting briefing and review overhead?
+- Did the route remain worthwhile after latency, cost, briefing, and review
+  overhead?
