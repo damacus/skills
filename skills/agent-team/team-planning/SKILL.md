@@ -18,12 +18,23 @@ safe, reviewable execution packet for a later tranche-development run.
 1. Read the current project's team charter and repository instructions.
 2. Read `adaptive-model-routing` completely and use it to choose the smallest capable assistance
    level.
-3. Consult `subagent-driven-development` completely for its durable artifacts, independent-review
-   gates, continuous-execution rule, and final broad review. Do not adopt its fresh-writer-per-task
-   rule if the project charter specifies a different writer-ownership model.
+3. Use the durable artifacts, independent-review gates, continuous-execution rule, and final broad
+   review defined in this skill. No separate development-workflow skill is required.
 
-The charter is the source of truth for project-specific seats, authority, safety rules, product
-history, and local commands. Keep those details out of this portable skill.
+The charter is the source of truth for project-specific authority, safety rules, product history,
+and local commands. Keep those details out of this portable skill.
+
+## Portable vocabulary
+
+The role names in this skill are portable labels rather than project-specific identities:
+
+- Bucky coordinates, integrates, and owns acceptance.
+- Nightingale is the sole writer for an active tranche.
+- Hubble performs independent read-only review.
+- Scout performs bounded read-only discovery.
+
+Luna, Terra, and Sol are model tiers from `adaptive-model-routing`, not team seats. A project charter
+may refine these roles, but it must preserve the one-writer and independent-review boundaries.
 
 Cake is a post-acceptance recognition reward. It is never a task, tranche, scope unit, priority,
 approval, performance target, or definition of done. Plans must use ordinary work language.
@@ -78,7 +89,7 @@ unavailable.
 
 ## Handoff to execution
 
-Before handing a plan to tranche development, confirm that it preserves the `subagent-driven-development`
-durable workflow: file-based briefs and reports, a progress ledger, independent per-task review,
-continuous execution, and a final broad review. Record unresolved questions and their owner in
-the plan; do not conceal uncertainty in a vague task.
+Before handing a plan to tranche development, confirm that it preserves the durable workflow:
+file-based briefs and reports, a progress ledger, independent per-task review, continuous execution,
+and a final broad review. Record unresolved questions and their owner in the plan; do not conceal
+uncertainty in a vague task.
