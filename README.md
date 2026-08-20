@@ -28,6 +28,10 @@ npx skills@latest add damacus/skills --skill ruby --global
 
 Skills are organized by category under `skills/`.
 
+### Agent Team
+
+- **[team-planning](./skills/agent-team/team-planning/SKILL.md)**
+
 ### Engineering
 
 - **[cli-design](./skills/engineering/cli-design/SKILL.md)**
@@ -81,6 +85,7 @@ detected project and task require.
 
 ## Layout
 
+- `skills/agent-team/`
 - `skills/engineering/`
 - `skills/language/`
 - `skills/operations/`
