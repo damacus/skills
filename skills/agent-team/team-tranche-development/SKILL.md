@@ -13,12 +13,23 @@ description: >-
 Execute one approved tranche continuously until it is complete or genuinely blocked. Read the
 current project's team charter and repository instructions before acting.
 
-## Required upstream workflows
+## Required upstream workflow
 
-Read and apply both `adaptive-model-routing` and `subagent-driven-development` completely.
-`adaptive-model-routing` governs risk-based judgment and model selection. Preserve
-`subagent-driven-development`'s file briefs and reports, progress ledger, independent review,
-continuous execution, and final broad review.
+Read and apply `adaptive-model-routing` completely. It governs risk-based judgment and model
+selection. This skill defines its own file briefs and reports, progress ledger, independent review,
+continuous execution, and final broad review; no separate development-workflow skill is required.
+
+## Portable vocabulary
+
+The role names in this skill are portable labels rather than project-specific identities:
+
+- Bucky coordinates, integrates, and owns acceptance.
+- Nightingale is the sole writer for an active tranche.
+- Hubble performs independent read-only review.
+- Scout performs bounded read-only discovery.
+
+Luna, Terra, and Sol are model tiers from `adaptive-model-routing`, not team seats. A project charter
+may refine these roles, but it must preserve the one-writer and independent-review boundaries.
 
 ## Charter override: persistent writer ownership
 
