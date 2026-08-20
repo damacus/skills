@@ -55,6 +55,7 @@ detected project and task require.
 
 ### Productivity
 
+- **[plain-technical-writing](./skills/productivity/plain-technical-writing/SKILL.md)**
 - **[storyboard](./skills/productivity/storyboard/SKILL.md)**
 - **[translate](./skills/productivity/translate/SKILL.md)**
 
