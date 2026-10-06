@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>$page_title</title>
+  <style>$styles</style>
+</head>
+<body>
+  <a class="skip" href="#report">Skip to the report</a>
+  <div class="layout">
+    <nav class="navigation" aria-label="Report sections">
+      <strong>$project</strong><p>$report_name</p>
+      <div class="links">$navigation</div>
+    </nav>
+    <main id="report">
+      <header class="hero">
+        <div class="eyebrow">$report_name</div>
+        <h1>$headline</h1>
+        $overview
+        <p class="stamp">Snapshot: $updated</p>
+      </header>
+      $content
+      <footer class="footer"><p>Scores count named items. They do not estimate effort or time remaining.</p></footer>
+    </main>
+  </div>
+  <script>
+    function revealTarget() {
+      const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      if (target) {
+        const details = target.closest('details');
+        if (details) details.open = true;
+      }
+    }
+    addEventListener('hashchange', revealTarget);
+    revealTarget();
+    let previouslyOpen = [];
+    addEventListener('beforeprint', () => {
+      previouslyOpen = [...document.querySelectorAll('details')].map(item => item.open);
+      document.querySelectorAll('details').forEach(item => { item.open = true; });
+    });
+    addEventListener('afterprint', () => {
+      document.querySelectorAll('details').forEach((item, index) => { item.open = previouslyOpen[index]; });
+    });
+  </script>
+</body>
+</html>
