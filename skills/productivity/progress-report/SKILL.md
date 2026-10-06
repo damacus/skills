@@ -78,3 +78,11 @@ Keep this practical. Add no report-generator test suite or testing project.
 Render a representative example and inspect it visually. The renderer's
 input validation catches missing fields, invalid states and evidence links.
 Repository checks remain part of publishing an authored skill change.
+
+`task test` validates the published inventory and the repository's existing
+Ruby and security checks. It does not lint this skill's Markdown, check its
+local links or exercise its renderer. Before publishing a change here, also
+lint this skill's Markdown, check its local links, and render a representative
+input with `scripts/render.py`. These are direct publishing checks, not a new
+generator test suite or task gate. Use the example's local Markdown settings
+when linting its fixed input format.
