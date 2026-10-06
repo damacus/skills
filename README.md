@@ -61,6 +61,8 @@ detected project and task require.
 ### Productivity
 
 - **[plain-technical-writing](./skills/productivity/plain-technical-writing/SKILL.md)**
+- **[progress-report](./skills/productivity/progress-report/SKILL.md)** — HTML
+  progress reports with named items, evidence and a bundled renderer.
 - **[storyboard](./skills/productivity/storyboard/SKILL.md)**
 - **[translate](./skills/productivity/translate/SKILL.md)**
 
