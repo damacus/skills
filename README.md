@@ -84,6 +84,7 @@ detected project and task require.
 - **[gh-address-comments](./skills/workflow/gh-address-comments/SKILL.md)**
 - **[github-pr](./skills/workflow/github-pr/SKILL.md)**
 - **[grilling](./skills/workflow/grilling/SKILL.md)**
+- **[migrate](./skills/workflow/migrate/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
 - **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
