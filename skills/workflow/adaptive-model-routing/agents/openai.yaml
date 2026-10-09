@@ -1,4 +1,4 @@
 interface:
   display_name: "Adaptive Model Routing"
-  short_description: "Keep judgment strong and delegate bounded execution"
+  short_description: "Route GPT-6 work for value without sacrificing quality"
   default_prompt: "Use $adaptive-model-routing to choose models and reasoning efforts for this task, including downshift and escalation gates."

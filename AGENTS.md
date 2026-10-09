@@ -5,6 +5,8 @@ This repository is the authored source for `damacus/skills`.
 ## Repository Rules
 
 - Store skills under `skills/<category>/<skill>/`.
+- Edit authored skills here, then refresh global installations. Do not create or
+  edit competing copies in project repositories or installation directories.
 - Every skill must include a `SKILL.md` with YAML frontmatter containing `name` and `description`.
 - Supporting files should live beside the skill in `references/`, `scripts/`, `assets/`, or another clearly named local folder.
 - Do not commit installed third-party skills or runtime lock files.
