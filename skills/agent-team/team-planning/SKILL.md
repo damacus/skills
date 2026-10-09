@@ -1,95 +1,58 @@
 ---
 name: team-planning
 description: >-
-  Plan bounded work for a persistent agent team before implementation. Use when decomposing a
-  requested change into tranches, assigning team seats, selecting assistance, or preparing
-  file-based briefs, reports, reviews, and a durable progress ledger.
+  Coordinate ownership, dependencies and shared resources for work that needs
+  several contributors. Use after scope and slices are defined; skip for work
+  one owner can complete without coordination.
 ---
-
-<!-- markdownlint-configure-file {"MD013":{"line_length":110,"code_blocks":false,"tables":false}} -->
 
 # Team Planning
 
-Plan first; do not implement or dispatch a writer from this skill. This workflow prepares a
-safe, reviewable execution packet for a later tranche-development run.
+Use this skill only when work needs coordination between contributors,
+dependencies or scarce environments. A single-owner slice does not need a
+separate team plan. Do not implement or dispatch a writer while planning.
 
-## Required context
+## Reuse the agreed work
 
-1. Read the current project's team charter and repository instructions.
-2. Read `adaptive-model-routing` completely and use it to choose the smallest capable assistance
-   level.
-3. Use the durable artifacts, independent-review gates, continuous-execution rule, and final broad
-   review defined in this skill. No separate development-workflow skill is required.
+Read repository instructions, settled decisions and the current handoff.
+Use `slice` for decomposition and `migrate` for migration discovery and
+preservation requirements. Do not repeat either process or create a second
+acceptance document.
 
-The charter is the source of truth for project-specific authority, safety rules, product history,
-and local commands. Keep those details out of this portable skill.
+Apply `adaptive-model-routing` for all model, effort, usage and escalation
+decisions. Team titles do not determine models. Existing charter role names
+describe responsibilities, not a mandatory standing team.
 
-## Portable vocabulary
+## Resolve coordination
 
-The role names in this skill are portable labels rather than project-specific identities:
+Update the existing brief with only what execution needs:
 
-- Bucky coordinates, integrates, and owns acceptance.
-- Nightingale is the sole writer for an active tranche.
-- Hubble performs independent read-only review.
-- Scout performs bounded read-only discovery.
+- One accountable owner through integration, review fixes and delivery.
+- One source writer per active slice, with owned paths and read-only context.
+- Dependencies, integration order and ownership of shared files and interfaces.
+- Available checkouts, databases, runners and scarce test capacity.
+- The agreed acceptance evidence, required review and project-native checks.
+- Unresolved decisions, stopping conditions and the next implementation action.
+- A place for delegated session IDs, live jobs, results and completion state.
 
-Luna, Terra, and Sol are model tiers from `adaptive-model-routing`, not team seats. A project charter
-may refine these roles, but it must preserve the one-writer and independent-review boundaries.
+Parallel work must be independent in ownership and verification. Keep tightly
+coupled API, UI and integration work together. Do not manufacture work to occupy
+agents. The coordinator can also implement; extra roles must justify their cost.
 
-Cake is a post-acceptance recognition reward. It is never a task, tranche, scope unit, priority,
-approval, performance target, or definition of done. Plans must use ordinary work language.
+For migrations, pass the established reference and approved differences to
+every contributor. The owner should not have to redescribe the existing app.
+Resolve material contradictions before dependent implementation.
 
-## Plan artifact
+## Hand off
 
-Write a file-based plan that gives each tranche:
+Read-only help needs a bounded question, retained evidence and existing
+delegation authority. External sharing requires its own authority. Planning
+does not grant permission to dispatch anyone.
 
-- a user-visible outcome and definition of done;
-- non-overlapping owned paths and explicitly read-only context;
-- constraints, safety boundaries, and escalation conditions;
-- exact verification commands and the authoritative environment;
-- a uniquely named file brief and report path;
-- a ledger entry format and the independent-review gate required before completion.
+Check that the brief can accept the complete journey. Require independent
+review for non-trivial migrations and security work, plus repository gates.
+Do not duplicate reviews of unchanged work.
 
-Keep the plan small enough that one writer can carry the whole tranche through review fixes. Split
-only at a real ownership or verification boundary; do not turn tightly coupled work into parallel
-writer tasks.
-
-## Assistance gates
-
-Choose assistance before producing the plan. Read-only help must have bounded questions, paths,
-and a report artifact.
-
-| Work shape | Planning assistance |
-| --- | --- |
-| Small, exact, low-risk edit with obvious verification | Bucky plans directly; no assistant is needed. |
-| Substantial bounded work with independent discovery or review questions | Use read-only Scout or Hubble assistance, routed to Luna `medium`/`high` when available; fall back to Terra at the same effort when Luna is unavailable. |
-| High-risk, cross-cutting, safety-sensitive, ambiguous, or repeatedly failing work | Keep judgment with Bucky at Sol `high` or higher; use read-only help only for a sharply bounded evidence question. |
-
-Escalate rather than guess when scope expands, an interface or safety decision appears, evidence
-conflicts, or the same verification failure survives two evidence-based attempts.
-
-## Recorded planning routes
-
-When emitting or recording a planning route, list only seats active during planning. Nightingale never
-appears in that route, `writer_owner_count` is zero because no active tranche owns writing yet,
-and future implementation ownership is not part of a planning decision. Sol `high` and `xhigh`
-routes have `fallback: null` while Sol is
-available. Luna-to-Terra fallback applies only when Luna is the chosen primary and Luna is
-unavailable.
-
-## Planning boundaries
-
-- Never dispatch Nightingale or any other writer while planning.
-- Hubble and Scout remain read-only. Their reports inform Bucky's decisions but do not change the
-  plan without Bucky's review.
-- Do not promise commits, pushes, upstream mutation, or product-scope expansion without the
-  authority required by the project charter and repository instructions.
-- Preserve existing work, use isolated workspaces and databases when the charter requires them,
-  and keep all records truthful.
-
-## Handoff to execution
-
-Before handing a plan to tranche development, confirm that it preserves the durable workflow:
-file-based briefs and reports, a progress ledger, independent per-task review, continuous execution,
-and a final broad review. Record unresolved questions and their owner in the plan; do not conceal
-uncertainty in a vague task.
+Use `team-slice-development` to execute and follow delegated work to a result.
+Use `plain-technical-writing` for the brief and updates. Preserve the existing
+owner until the receiver acknowledges a transfer.
