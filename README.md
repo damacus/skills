@@ -90,6 +90,7 @@ detected project and task require.
 - **[start](./skills/workflow/start/SKILL.md)**
 - **[openspec-apply-change](./skills/workflow/openspec-apply-change/SKILL.md)**
 - **[openspec-archive-change](./skills/workflow/openspec-archive-change/SKILL.md)**
+- **[openspec-explore](./skills/workflow/openspec-explore/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
 - **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
