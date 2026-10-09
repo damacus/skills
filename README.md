@@ -31,7 +31,7 @@ Skills are organized by category under `skills/`.
 ### Agent Team
 
 - **[team-planning](./skills/agent-team/team-planning/SKILL.md)**
-- **[team-tranche-development](./skills/agent-team/team-tranche-development/SKILL.md)**
+- **[team-slice-development](./skills/agent-team/team-slice-development/SKILL.md)**
 
 ### Engineering
 
