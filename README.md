@@ -4,6 +4,17 @@
 
 Agent skills curated for my own workflows.
 
+This repository is the source of truth for maintained skills. Edit and validate
+them here, then refresh their global installations. Project repositories keep
+project facts and references to skills; they must not carry competing copies.
+Bundled plugin skills remain owned by their plugin distribution.
+
+For migrations, use `migrate` to establish the reference, `grilling` to resolve
+important decisions, and `slice` to define complete journeys. Use `team-planning`
+only when coordination is needed, then `team-slice-development` for execution.
+`adaptive-model-routing` owns all model choices. The former
+`team-tranche-development` and installed `team-development` names are retired.
+
 ## Install
 
 Install the full collection:
@@ -42,7 +53,8 @@ Skills are organized by category under `skills/`.
 ### Language
 
 - **[fish-shell](./skills/language/fish-shell/SKILL.md)**
-- **[medtracker-rust](./skills/language/medtracker-rust/SKILL.md)**
+- **[medtracker-rust](./skills/language/medtracker-rust/SKILL.md)** — MedTracker-specific
+  Rust migration guidance, installed globally and scoped to that project.
 - **[ruby](./skills/language/ruby/SKILL.md)** — Ruby and Rails router covering
   RSpec, Minitest, Cucumber, quality, coverage, databases, and tooling.
 
@@ -86,8 +98,6 @@ detected project and task require.
 - **[github-pr](./skills/workflow/github-pr/SKILL.md)**
 - **[grilling](./skills/workflow/grilling/SKILL.md)**
 - **[migrate](./skills/workflow/migrate/SKILL.md)**
-- **[slice](./skills/workflow/slice/SKILL.md)**
-- **[start](./skills/workflow/start/SKILL.md)**
 - **[openspec-apply-change](./skills/workflow/openspec-apply-change/SKILL.md)**
 - **[openspec-archive-change](./skills/workflow/openspec-archive-change/SKILL.md)**
 - **[openspec-explore](./skills/workflow/openspec-explore/SKILL.md)**
@@ -96,7 +106,9 @@ detected project and task require.
 - **[openspec-update-change](./skills/workflow/openspec-update-change/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
+- **[slice](./skills/workflow/slice/SKILL.md)**
 - **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
+- **[start](./skills/workflow/start/SKILL.md)**
 - **[wtf](./skills/workflow/wtf/SKILL.md)**
 
 ## Layout
