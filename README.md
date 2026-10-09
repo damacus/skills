@@ -42,6 +42,7 @@ Skills are organized by category under `skills/`.
 ### Language
 
 - **[fish-shell](./skills/language/fish-shell/SKILL.md)**
+- **[medtracker-rust](./skills/language/medtracker-rust/SKILL.md)**
 - **[ruby](./skills/language/ruby/SKILL.md)** — Ruby and Rails router covering
   RSpec, Minitest, Cucumber, quality, coverage, databases, and tooling.
 
