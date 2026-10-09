@@ -86,6 +86,7 @@ detected project and task require.
 - **[grilling](./skills/workflow/grilling/SKILL.md)**
 - **[migrate](./skills/workflow/migrate/SKILL.md)**
 - **[slice](./skills/workflow/slice/SKILL.md)**
+- **[start](./skills/workflow/start/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
 - **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
