@@ -88,6 +88,7 @@ detected project and task require.
 - **[migrate](./skills/workflow/migrate/SKILL.md)**
 - **[slice](./skills/workflow/slice/SKILL.md)**
 - **[start](./skills/workflow/start/SKILL.md)**
+- **[openspec-apply-change](./skills/workflow/openspec-apply-change/SKILL.md)**
 - **[retro](./skills/workflow/retro/SKILL.md)**
 - **[screenshot-github](./skills/workflow/screenshot-github/SKILL.md)**
 - **[stack-pull-requests](./skills/workflow/stack-pull-requests/SKILL.md)**
