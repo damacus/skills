@@ -2,87 +2,77 @@
 name: progress-report
 description: >-
   Create and update a readable HTML progress report for a project, migration or
-  multi-agent delivery. Use when the user needs an overview of every slice,
-  explicit completed/total scores, evidence, remaining work and concrete next
-  actions. Uses structured Markdown and a bundled Python renderer and layout.
+  multi-agent delivery. Use when the user needs every slice, completed/total
+  scores, evidence and concrete next actions. Uses authoritative JSON data and
+  a bundled Python renderer with a compact human-facing layout.
 ---
 
 # Progress Report
 
-Create a report that someone passing by can understand without asking each
-agent for an update. Use plain UK English. Explain what works, what remains
-and the next concrete action. Keep the bundled visual format.
+Keep one machine-readable JSON source and generate HTML for people. Write plain
+UK English. Preserve the bundled visual style, with a very short preamble, an
+explicit evidence snapshot time and expandable checklists.
 
 ## Create or update a report
 
-1. Read the latest source evidence and the existing report input. Confirm the
-   complete goal, its sensible slices and any separate first-release boundary.
-   Ask only for facts or decisions that materially affect the report.
-2. Start from [the example input](examples/example.md). Follow
-   [the input format](references/input-format.md). Keep one authoritative
-   Markdown input for each report.
-3. Keep slice IDs, item IDs and item boundaries stable between updates. Retain
-   deferred work in the full goal. If requirements change, explain the change
-   and its effect on the denominator in `Limitations`.
-4. Add observed evidence, including its timestamp, source and revision. Update
-   each item's delivery states from that evidence. Describe an unknown state
-   as pending; do not infer publication, checks, acceptance or deployment.
-5. Run the renderer from this skill directory:
+1. Read the existing JSON and current evidence. Confirm the full goal and any
+   separate first-release boundary. Ask only material unresolved questions.
+2. Start from [example.json](examples/example.json) and follow the
+   [input format](references/input-format.md). JSON is authoritative; do not
+   maintain a second Markdown ledger or hand-edit the generated HTML.
+3. Keep slice IDs, item IDs, scopes and boundaries stable. Keep deferred work in
+   the full goal. Explain any denominator change in `limitations`.
+4. Update delivery states only from evidence, retaining its observation time,
+   revision and source. Set the timezone-qualified `snapshot_at` and
+   `snapshot_timezone`. Reformatting or rendering does not refresh evidence.
+5. Keep `headline` brief and `summary` to one short sentence. Put detailed work,
+   remaining tasks and next actions in checklist items, once. Do not add repeated
+   “What works”, “What remains”, “What closes this slice” or next-action sections.
+6. Render with JSON and HTML beside each other:
 
    ```sh
-   python3 scripts/render.py /absolute/path/report.md /absolute/path/report.html
+   python3 scripts/render.py /absolute/path/report.json /absolute/path/report.html
    ```
 
-6. Open the generated report for the user. Inspect the rendered desktop and
-   narrow layout, expand a checklist and inspect print behaviour when the
-   available preview supports it. Report any preview limitation directly.
-   Refine the input or bundled layout with the user.
+7. Open the HTML. Inspect desktop and narrow layouts, expand a checklist and
+   inspect print behaviour when supported. State any preview limitation. Keep
+   source evidence and limitations in their disclosure, not the preamble.
+
+For an existing Markdown report, convert its records to the documented JSON
+shape, preserve IDs and dated evidence, compare scores, then retire Markdown as
+an active input. Keep the old file only as a labelled historical archive.
 
 ## Scoring and delivery states
 
-An item earns one point when it is implemented, published and its recorded
-checks have passed. Local and hosted checks are recorded separately. A check
-may be marked `not-required` only with evidence explaining why it does not
-apply. Partly completed items earn no point. Selecting a library or preparing
-an implementation earns no completed point.
+An item earns one point only when implementation is complete, publication is
+published, and both local and hosted checks passed or are evidenced as not
+required. Partial work earns no point. Positive states need evidence references;
+not-required checks need an explanation of why the check does not apply.
 
 Record implementation, local checks, publication, hosted checks, acceptance,
-merging and deployment separately. Whole-slice acceptance needs its own
-evidence even when every checklist item earns a point.
+merge and deployment separately. Whole-slice acceptance requires its own
+evidence, even when every item earns a point. Unknown means pending.
 
-The renderer derives the navigation, overview, scores, progress bars, working
-behaviour, remaining work and next actions from the same item records. Do not
-write separate copies of those facts or hand-edit the generated HTML.
+Derive scores and navigation from the JSON records. Never store competing
+handwritten totals. Items differ in size: do not average into a percentage or
+predict a completion date. Show a separate first-release count from explicit
+scope. Deferred full-goal work stays visible; counts do not declare release ready.
 
-Scores count named items of different sizes. Do not average them into an
-overall percentage, invent effort estimates or use them to predict a date.
-Show a separate first-release count using the explicit item scope. Full-goal
-work remains visible and does not block that smaller boundary's item count.
-The count alone does not declare a release ready.
+## Bundled files and validation
 
-## Bundled files
+- [Renderer](scripts/render.py): Python standard library; validates required
+  fields, IDs, states, snapshot time and evidence references.
+- [Template](assets/report.html), [styles](assets/report.css) and
+  [checklist styles](assets/checklist.css): sidebar, scores, expandable checklist
+  tables, responsive layout and print expansion. Detailed delivery states remain
+  inside each checklist. Slice acceptance criteria are nested there too.
+- [JSON example](examples/example.json) and [HTML example](examples/example.html):
+  fictional data demonstrating the format.
+- [Retained historical design](references/medtracker-migration-status.html):
+  historical reference only; its verbose sections are not the current template.
 
-- [Renderer](scripts/render.py): Python standard library only; no installation.
-- [HTML template](assets/report.html), [reference styles](assets/report.css)
-  and [checklist styles](assets/checklist.css): fixed
-  sidebar, cards, expandable checklist tables, responsive layout and print
-  layout. Checklist tables use the reference's Item, State, and Evidence or
-  remaining work columns; each state can expand to show delivery details.
-- [Example input](examples/example.md) and [output](examples/example.html):
-  fictional facts that demonstrate the format and delivery states.
-- [Retained MedTracker reference](references/medtracker-migration-status.html):
-  the design snapshot copied on 6 October 2026. Its progress figures are
-  historical. It is a visual reference, not current project evidence.
-
-Keep this practical. Add no report-generator test suite or testing project.
-Render a representative example and inspect it visually. The renderer's
-input validation catches missing fields, invalid states and evidence links.
-Repository checks remain part of publishing an authored skill change.
-
-`task test` validates the published inventory and the repository's existing
-Ruby and security checks. It does not lint this skill's Markdown, check its
-local links or exercise its renderer. Before publishing a change here, also
-lint this skill's Markdown, check its local links, and render a representative
-input with `scripts/render.py`. These are direct publishing checks, not a new
-generator test suite or task gate. Use the example's local Markdown settings
-when linting its fixed input format.
+Do not add a report-generator test suite or testing project. Render the example
+and inspect the result. Check representative invalid inputs with the renderer.
+Before publishing skill changes, run repository `task test`, lint this skill's
+Markdown, check its local links, render the example and run `git diff --check`.
+The repository task alone does not cover all of those checks.

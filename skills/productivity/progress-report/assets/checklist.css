@@ -24,3 +24,7 @@
   table { font-size: 9pt; }
   th, td { padding: 7px; }
 }
+
+.hero h1 {font-size:clamp(26px,3vw,36px);margin:8px 0 12px}.hero p{margin:8px 0}.slice-card{padding:24px}.slice-card details{margin-top:14px}.evidence li{overflow-wrap:anywhere}
+@media(max-width:760px){.checklist,.checklist tbody,.checklist tr,.checklist th,.checklist td{display:block;width:100%;min-width:0}.checklist thead{display:none}.checklist tr{border-bottom:2px solid var(--line);padding:12px 0}.checklist th,.checklist td{border:0;padding:6px 0}.checklist th[scope="row"],.checklist td:nth-child(2){width:100%}.navigation .links{max-height:220px;overflow:auto}}
+@media print{details::details-content{display:block}.navigation{display:none}}

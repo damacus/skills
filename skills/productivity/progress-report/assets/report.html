@@ -19,18 +19,18 @@
         <div class="eyebrow">$report_name</div>
         <h1>$headline</h1>
         $overview
-        <p class="stamp">Snapshot: $updated</p>
+        <p class="stamp">Evidence snapshot: $updated · <a href="$data_source">JSON data</a></p>
       </header>
       $content
-      <footer class="footer"><p>Scores count named items. They do not estimate effort or time remaining.</p></footer>
+      <footer class="footer"><p>Complete = implemented, published and checks passed. Counts do not measure effort or release readiness.</p></footer>
     </main>
   </div>
   <script>
     function revealTarget() {
       const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
       if (target) {
-        const details = target.closest('details');
-        if (details) details.open = true;
+        let parent = target.parentElement;
+        while (parent) { if (parent.tagName === 'DETAILS') parent.open = true; parent = parent.parentElement; }
       }
     }
     addEventListener('hashchange', revealTarget);
