@@ -36,6 +36,12 @@ Archive a completed change in the experimental workflow.
    - `planningHome`, `changeRoot`, `artifactPaths`, and `actionContext`: path and scope context
    - `artifacts`: List of artifacts with their status (`done` or other)
 
+   Set `mainSpecsRoot` to `<planningHome.root>/openspec/specs/` using the
+   selected planning home's absolute root from status JSON. With `--store <id>`,
+   this is the store's root, not the caller's repository. If `planningHome.root`
+   is missing or ambiguous, stop and report the missing context; never fall back
+   to the caller's `openspec/specs/` for a selected store.
+
    **If any artifacts are not `done`:**
    - Display warning listing incomplete artifacts
    - Use **AskUserQuestion tool** to confirm user wants to proceed
@@ -59,7 +65,7 @@ Archive a completed change in the experimental workflow.
    Use `artifactPaths.specs.existingOutputPaths` from status JSON to check for delta specs. If none exist, proceed without sync prompt.
 
    **If delta specs exist:**
-   - Compare each delta spec with its corresponding main spec at `openspec/specs/<capability>/spec.md`
+   - Compare each delta spec with its corresponding main spec at `<mainSpecsRoot>/<capability>/spec.md`
    - Determine what changes would be applied (adds, modifications, removals, renames)
    - Show a combined summary before prompting
 
@@ -67,7 +73,21 @@ Archive a completed change in the experimental workflow.
    - If changes needed: "Sync now (recommended)", "Archive without syncing"
    - If already synced: "Archive now", "Sync anyway", "Cancel"
 
-   If user chooses sync, use Task tool (subagent_type: "general-purpose", prompt: "Use Skill tool to invoke openspec-sync-specs for change '<name>'. Delta spec analysis: <include the analyzed delta spec summary>"). Proceed to archive regardless of choice.
+   Handle the choice before proceeding:
+
+   - **Cancel:** Stop immediately. Leave the change active and do not move it.
+   - **Archive now / Archive without syncing:** Proceed with the selected option.
+   - **Sync now / Sync anyway:** Run `openspec-sync-specs` for this change and
+     wait for completion. Pass the selected store id (or explicit local context),
+     `changeRoot`, `mainSpecsRoot` and the delta summary. If delegating with
+     existing authority, pass the same context and wait for the worker's result.
+     Re-read the affected main specs in that root and confirm all intended delta
+     changes were applied before proceeding.
+
+   If sync fails, is unavailable, remains incomplete or cannot be verified, stop
+   and keep the change active. Report the failure and any partial edits. Archive
+   without syncing only after the user explicitly chooses that option in a new
+   prompt; the earlier sync choice does not authorise it.
 
 5. **Perform the archive**
 
