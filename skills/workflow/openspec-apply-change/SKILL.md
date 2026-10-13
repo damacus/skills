@@ -49,7 +49,14 @@ Implement tasks from an OpenSpec change.
    - Dynamic instruction based on current state
 
    **Handle states:**
-   - If `state: "blocked"` (missing artifacts): show message, suggest using openspec-continue-change
+   - If `state: "blocked"` (missing artifacts): stop implementation and report
+     the missing artifacts. This collection does not publish a continuation
+     skill. To complete them, use `openspec status --change "<name>" --json`
+     and `openspec instructions <artifact-id> --change "<name>" --json` with
+     the same store selection. Follow the schema's dependency order, rules,
+     template and resolved output paths; preserve existing completed artifacts.
+     Recheck status and apply instructions after creating each missing artifact,
+     and resume implementation only when apply is no longer blocked.
    - If `state: "all_done"`: congratulate, suggest archive
    - Otherwise: proceed to implementation
 

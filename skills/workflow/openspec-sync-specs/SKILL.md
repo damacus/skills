@@ -35,6 +35,14 @@ This is an **agent-driven** operation - you will read delta specs and directly e
    openspec status --change "<name>" --json
    ```
 
+   Retain the selected store id (or explicit local context), `planningHome`,
+   `changeRoot` and `artifactPaths`. Set `mainSpecsRoot` to
+   `<planningHome.root>/openspec/specs/` using the absolute root from status JSON.
+   With `--store <id>`, this is the store's root, not the caller's repository.
+   If `planningHome.root` is missing or ambiguous, stop and report the missing
+   context; never substitute the caller's `openspec/specs/` for a selected store.
+   Use this same root for every main-spec read and write.
+
 3. **Find delta specs**
 
    Use `artifactPaths.specs.existingOutputPaths` from the status JSON as the list of delta spec files.
@@ -49,11 +57,11 @@ This is an **agent-driven** operation - you will read delta specs and directly e
 
 4. **For each delta spec, apply changes to main specs**
 
-   For each repo-local capability delta spec path returned by the CLI:
+   For each capability delta spec path returned by the CLI for the selected planning home:
 
    a. **Read the delta spec** to understand the intended changes
 
-   b. **Read the main spec** at `openspec/specs/<capability>/spec.md` (may not exist yet)
+   b. **Read the main spec** at `<mainSpecsRoot>/<capability>/spec.md` (may not exist yet)
 
    c. **Apply changes intelligently**:
 
@@ -76,7 +84,7 @@ This is an **agent-driven** operation - you will read delta specs and directly e
       - Find the FROM requirement, rename to TO
 
    d. **Create new main spec** if capability doesn't exist yet:
-      - Create `openspec/specs/<capability>/spec.md`
+      - Create `<mainSpecsRoot>/<capability>/spec.md`
       - Add Purpose section (can be brief, mark as TBD)
       - Add Requirements section with the ADDED requirements
 
