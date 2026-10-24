@@ -90,6 +90,8 @@ detected project and task require.
 ### UI
 
 - **[ui-professional](./skills/ui/ui-professional/SKILL.md)**
+- **[wear-os-design](./skills/ui/wear-os-design/SKILL.md)** — Native watch layouts,
+  navigation, touch feedback and physical-device verification.
 
 ### Workflow
 
