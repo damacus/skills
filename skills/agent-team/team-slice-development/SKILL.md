@@ -23,6 +23,12 @@ Read and apply `adaptive-model-routing` and its reference. It alone governs mode
 effort, usage checks, fallbacks and escalation. Do not copy its routing tables here or
 assign a model because of a team title. The thread leader is not automatically Astra.
 
+Normal/default service is required unless the user explicitly approves Fast for
+the specific work. This applies to leaders, implementers and reviewers, especially
+Astra. Verify tier independently of model and effort before dispatch or reuse;
+do not inherit priority silently. Follow the routing policy when the tool cannot
+select or verify normal service. Changing config does not change a running chat.
+
 At the start, material scope changes and failed acceptance, apply that policy to the
 actual uncertainty and consequence. Briefly record the decision in the existing slice
 record: unresolved question, chosen route, why it fits and evidence needed to proceed.
@@ -125,8 +131,11 @@ criteria; sending them work does not transfer the leader's accountability.
 
 - Give one bounded job, owned paths, prohibited actions, required evidence and stopping
   conditions. Check necessary tool access and command permissions before a long run.
-- Record the stable external session ID, process/job handle, checkout, source revision,
-  output location and responsible owner in the existing slice record.
+- Record the stable external session ID, parent session, agent name/path, process/job
+  handle, checkout, source revision, output location and responsible owner in the
+  existing slice record. Retain model, reasoning effort and service-tier changes
+  with timestamps in the usage ledger, plus cached/uncached input and output token
+  deltas. Missing metadata remains unknown; never infer charges from token totals.
 - Before leaving work unattended, establish and verify a completion/failure notification
   mechanism. If none exists, remain responsible for bounded status checks while active;
   do not promise monitoring after the turn ends. Scheduling requires authorisation.
