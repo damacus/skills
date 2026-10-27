@@ -8,4 +8,10 @@ tasks:
       - markdownlint-cli2 'skills/security/**/*.md'
       - ruby skills/scripts/validate_ruby_skill.rb
       - ruby -c skills/language/ruby/scripts/ruby_outline.rb
+      - task: test:model-routing
       - git diff --check
+
+  test:model-routing:
+    desc: Verify latest-family model resolution and excluded model guards
+    cmds:
+      - python3 -B -m unittest discover -s skills/workflow/adaptive-model-routing/scripts -p test_resolve_model.py -v
