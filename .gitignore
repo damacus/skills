@@ -1,5 +1,6 @@
 .DS_Store
 *.pyc
 __pycache__/
+.rumdl_cache/
 .skill-lock.json
 

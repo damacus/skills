@@ -127,6 +127,9 @@ detected project and task require.
 
 ## Validation
 
+Install [rumdl](https://github.com/rvben/rumdl) for Markdown checks, for example
+with `uv tool install rumdl`. The checks also require Task, Ruby and Python 3.
+
 Run the focused authored-source checks from the repository root:
 
 ```sh
