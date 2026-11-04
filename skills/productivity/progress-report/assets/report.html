@@ -12,26 +12,41 @@
   <div class="layout">
     <nav class="navigation" aria-label="Report sections">
       <strong>$project</strong><p>$report_name</p>
-      <div class="links">$navigation</div>
+      <details class="navigation-menu" open>
+        <summary>Report navigation</summary>
+        <div class="links">$navigation</div>
+      </details>
     </nav>
     <main id="report">
       <header class="hero">
         <div class="eyebrow">$report_name</div>
         <h1>$headline</h1>
         $overview
-        <p class="stamp">Snapshot: $updated</p>
+        <p class="stamp">Evidence snapshot: $updated · <a href="$data_source">JSON data</a></p>
       </header>
       $content
-      <footer class="footer"><p>Scores count named items. They do not estimate effort or time remaining.</p></footer>
+      <footer class="footer"><p>Complete = implemented, published and checks passed. Counts do not measure effort or release readiness.</p></footer>
     </main>
   </div>
   <script>
+    const navigation = document.querySelector('.navigation-menu');
+    const narrow = matchMedia('(max-width: 760px)');
+    function adaptNavigation() { navigation.open = !narrow.matches; }
+    narrow.addEventListener('change', adaptNavigation);
+    adaptNavigation();
     function revealTarget() {
-      const target = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+      let id;
+      try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+      const target = document.getElementById(id);
       if (target) {
-        const details = target.closest('details');
-        if (details) details.open = true;
+        let parent = target.parentElement;
+        while (parent) { if (parent.tagName === 'DETAILS') parent.open = true; parent = parent.parentElement; }
+        target.scrollIntoView();
       }
+      document.querySelectorAll('.navigation a').forEach(link => {
+        if (link.hash === location.hash || (!location.hash && link.hash === '#report')) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
     }
     addEventListener('hashchange', revealTarget);
     revealTarget();
