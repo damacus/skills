@@ -1,127 +1,80 @@
-# Runtime Model Families
+# Runtime Guidance
 
-Resolve roles against the model inventory advertised by the actual target tool
-and host at each routing decision. Family names below are policy labels, not
-API model identifiers. Never send an invented `sol-latest` or similar alias.
+Read the sections needed for the current dispatch or reuse decision.
 
-| Family role | Use when |
-| --- | --- |
-| Latest permitted Terra | Default for most work with a clear goal or direction, including computer use |
-| Latest permitted Luna | Clear, low-risk work with objective checks |
-| Latest permitted Sol | Discovery, design, implementation and diagnosis |
-| Latest permitted Astra | Exceptional ambiguity, architecture or consequence |
+## Model resolution
 
-## Excluded Models
+Family names are policy labels, not API aliases. Obtain current model IDs,
+descriptions, availability, release status and supported/default efforts from
+the target tool and host. Do not reuse another host's inventory or old prices,
+benchmarks or defaults.
 
-- **Sol 6.0**, including `gpt-6-sol`, `gpt-6.0-sol` and any alias or pinned
-  release whose underlying model is Sol 6.0.
-- Models labelled retired, deprecated, legacy, previous-generation or older.
-- Preview, experimental and beta releases are excluded by this stable-family
-  resolver.
+Exclude Sol 6.0 (`gpt-6-sol`, `gpt-6.0-sol` and equivalent aliases), retired,
+deprecated, legacy, previous-generation, older, preview, experimental and beta
+models. Exclusions also apply to fallbacks, inheritance and cached agents.
 
-These exclusions apply to normal routing, low-limit routing, reviews,
-fallbacks, inherited defaults and reuse of existing agents. Availability does
-not make an excluded model eligible. Never use an unverified alias to bypass
-the exclusions. If no permitted model can meet the task's quality requirement,
-report the routing blocker instead of silently selecting an older model.
-
-## Resolve the Latest Permitted Release
-
-1. Read the target tool's current advertised model IDs, descriptions, release
-   status, versions, availability and supported/default reasoning efforts.
-   Do not use this document, a previous session, an old benchmark or another
-   host's inventory as a model registry.
-2. Filter out excluded and unavailable candidates. Retain the requested family.
-3. Prefer the newest stable generation/version within that family. Compare
-   version components numerically, never model strings lexicographically.
-   A later supported stable minor or major release replaces its predecessor
-   automatically; no change to this skill is required.
-4. Treat contradictory latest/version metadata or indistinguishable versions
-   as ambiguous. Resolve that metadata before selecting; do not guess a model ID.
-5. Pass the exact permitted ID returned by the resolver to the tool. A runtime
-   alias is usable only when its concrete target is advertised and verified;
-   prefer that concrete target so the exclusion check is explicit.
-
-The deterministic helper accepts a JSON inventory on stdin:
+Pass the advertised inventory as JSON on stdin to the bundled helper:
 
 ```text
-python3 scripts/resolve_model.py --family sol
-```
-
-Its input is `{"models": [...]}`. Each entry requires an advertised `id` and
-may include `description`, `status`, `available`, `is_latest`,
-`default_reasoning_effort` and `supported_reasoning_efforts`. Copy these fields
-from current runtime metadata; do not invent availability, versions or defaults.
-The helper supports canonical numeric GPT family IDs. Other naming schemes
-require verified canonical metadata and a resolver update, not an assumed match.
-
-Before using an explicit or inherited ID, check it against the same inventory:
-
-```text
+python3 scripts/resolve_model.py --family terra
 python3 scripts/resolve_model.py --check-model ACTUAL_ADVERTISED_MODEL_ID
 ```
 
-The helper rejects excluded IDs and permitted-but-outdated versions. It returns
-no replacement model on failure. It does not invoke models, alter account
-limits, consume resets or change any running agent.
+Input is `{"models": [...]}`. Entries require `id` and may include
+`description`, `status`, `available`, `is_latest`, `default_reasoning_effort`
+and `supported_reasoning_efforts`. Copy runtime metadata; do not invent it.
+The helper supports canonical numeric GPT family IDs. Other naming schemes
+need verified canonical metadata and a helper update.
 
-If model discovery is unavailable, report that latest resolution is unverified.
-Do not silently fall back to a remembered identifier or to inheritance from an
-unverified parent. Continue independent authorised work where possible.
+The helper compares eligible stable versions numerically. Contradictory
+duplicate metadata, conflicting latest markers or ambiguous versions block
+selection. It rejects superseded IDs during preflight. Missing inventory
+blocks selection too; continue independent authorised work where possible.
 
-## Reasoning Defaults and Tool Semantics
+Recheck at later routing decisions. Never dispatch new work to an excluded or
+superseded agent. Switching or replacing it still requires existing authority.
 
-Use the selected permitted model's current advertised default unless the owner
-chooses otherwise or evidence warrants an adjustment. Do not retain a dated
-snapshot of model defaults in this skill. Missing effort metadata is unknown.
+## Tool settings
 
-- Some tools inherit both the parent's model and effort when omitted. Omit
-  model only after verifying that the parent is the resolved latest permitted
-  model for the chosen role. Verify the effort separately.
-- When selecting a different model, follow the tool's fork constraints and
-  pass the resolved exact ID. Use its advertised default effort if omission
-  would inherit an unrelated value.
-- Existing agents retain their selected model. Check before reusing them;
-  do not send new work to an excluded or superseded model. A permitted switch
-  or replacement requires the normal task/delegation authority.
-- If the tool cannot switch a model and replacement is not authorised, report
-  the limitation. Updating this skill does not retrofit running agents.
+Inspect omission and fork semantics. Omit model only after verifying the
+parent's exact ID. Omit effort only if that uses the selected model's default;
+otherwise pass its advertised default explicitly. If no default is exposed,
+retain a known supported setting and disclose the uncertainty.
 
-## Value, Usage and Fallbacks
+Select `default` tier explicitly when omission inherits `priority`. Verify
+`thread_settings_applied.thread_settings.service_tier` where available.
+Missing tier evidence remains unknown. A priority-only tool cannot satisfy
+normal routing without explicit Fast approval for that work. Global config
+neither proves nor changes an existing session's tier.
 
-Optimise the total cost of a verified result while preserving quality. Model
-family roles guide initial judgement; actual current-version evidence should
-inform cost/performance comparisons. Do not transfer a predecessor's pricing,
-benchmarks or default effort to its successor. Consult current primary sources
-when a routing choice depends on those figures.
+## Usage evidence
 
-Apply the main skill's usage policy to every model decision. Below 10% in any
-applicable allowance window, conserve usage and ask before Astra. Exactly 10%
-uses normal routing; missing usage is unknown. API prices do not establish
-Codex allowance consumption or separate model allowances.
+Use applicable `rateLimitsByLimitId` buckets, falling back to legacy
+`rateLimits` when applicable mapped data is unavailable. Inspect all applicable
+windows; exclude unrelated model-specific buckets. Remaining percentage is
+`max(0, min(100, 100 - usedPercent))`.
 
-- Terra unavailable: use latest permitted Luna or Sol when suitable; Astra only
-  when required, subject to the low-limit approval rule.
-- Luna unavailable: use latest permitted Terra or Sol when suitable; Astra only
-  when required or the only suitable family, subject to the low-limit approval rule.
-- Sol unavailable: use latest permitted Terra or Luna only when quality remains
-  adequate; otherwise use latest permitted Astra, subject to the same approval rule.
-- Astra unavailable: use latest permitted Sol only when it can reliably meet
-  the requirement. Otherwise explain the capability gap.
-- No suitable permitted model: report the blocker. Exclusions stay in force.
+A known window below 10% triggers conservation even if another is unknown.
+If none is known to be low, retain normal routing and disclose missing data.
+Restore normal routing at the next decision after recovery. API prices do not
+establish Codex allowance consumption or separate model allowances.
 
-Changing family, effort or ownership does not itself authorise delegation,
-external messages, another task, or a change to running sessions.
+In the existing usage record, retain session/parent IDs, agent name/path and
+timestamped model, effort and tier changes. Use recorded settings evidence;
+do not infer historic settings from today's config. Track token deltas with
+cached and uncached input separately. Cached input is part of input; reasoning
+tokens are part of output. Do not sum cumulative snapshots or infer actual
+charges from settings and token totals.
 
-## Service Tier Evidence
+## Availability fallbacks
 
-Normal service is the default for every family, especially Astra. Select the
-recorded `default` tier; `priority` means Fast and requires explicit approval for
-the specific work. Inspect tool capabilities before dispatch. A priority-only
-tool cannot satisfy normal routing; do not launch an agent through it silently.
-Never inherit the caller's speed: explicitly select `default` when omission
-would inherit `priority`. A Fast Sol 6.1 caller does not authorise a Fast Astra
-agent; Fast requires an explicit user request covering the Astra work.
-Verify `thread_settings_applied.thread_settings.service_tier` after dispatch.
-Missing settings remain unknown. Global `service_tier = "default"` is a new-session
-default and cannot prove or change an existing session tier.
+- Terra or Luna unavailable: use the other or Sol when suitable.
+- Sol unavailable: use Terra or Luna only if quality remains adequate.
+- Astra unavailable: use Sol only if it can reliably meet the requirement.
+- Use Astra when needed or the only suitable option; ask first under low limits.
+- No suitable permitted model: report the blocker. Preserve quality, scope
+  and permissions through every fallback.
+
+Brief the owner with the objective, repository rules, owned paths, prohibited
+actions, acceptance checks and escalation conditions. These can come directly
+from the request; do not create extra handoff documents for clear work.
