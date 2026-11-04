@@ -139,13 +139,20 @@ def read_report(path):
     return meta, sections, slices, evidence
 
 
-def badge(entry):
+def badge(entry, evidence):
     status, references = entry
     colour = ("published" if status in {"complete", "passed", "published", "merged", "deployed"}
               else "missing" if status in {"failed", "not-started"}
               else "partial")
-    links = " ".join(f'<a href="#evidence-{escape(ref)}">{escape(ref)}</a>' for ref in references)
-    return f'<span class="badge {colour}">{LABELS[status]}</span> {links}'
+    label = LABELS[status]
+    if not references:
+        return f'<span class="badge {colour}">{label}</span>'
+    description = escape(f"{label} — view evidence: {evidence[references[0]]['title']}")
+    result = f'<a class="badge {colour}" href="#evidence-{escape(references[0])}" aria-label="{description}" title="{description}">{label}</a>'
+    for number, ref in enumerate(references[1:], 2):
+        description = escape(f"{label} — additional evidence: {evidence[ref]['title']}")
+        result += f' <a href="#evidence-{escape(ref)}" aria-label="{description}" title="{description}">Evidence {number}</a>'
+    return result
 
 
 def item_badge(item):
@@ -187,11 +194,11 @@ def render(path):
         name = f"{number:02}. {escape(slice_['title'])}"
         link = f'<a href="#{anchor}">{name}</a>'
         navigation.append(link)
-        rows.append(f'<tr><th scope="row">{link}</th><td data-label="Completed / full goal"><strong>{done}/{len(items)}</strong></td><td data-label="Additional locally passing">{local}</td><td data-label="In progress">{progress}</td><td data-label="Completed / first release">{release_done}/{len(required)}</td><td data-label="Whole-slice acceptance">{badge(slice_["accepted"])}</td></tr>')
+        rows.append(f'<tr><th scope="row">{link}</th><td data-label="Completed / full goal"><strong>{done}/{len(items)}</strong></td><td data-label="Additional locally passing">{local}</td><td data-label="In progress">{progress}</td><td data-label="Completed / first release">{release_done}/{len(required)}</td><td data-label="Whole-slice acceptance">{badge(slice_["accepted"], evidence)}</td></tr>')
         checklist = []
         for item in items:
             item_anchor = f"item-{item['id']}"
-            delivery = "".join(f"<dt>{escape(key)}</dt><dd>{badge(entry)}</dd>" for key, entry in item["states"].items())
+            delivery = "".join(f"<dt>{escape(key)}</dt><dd>{badge(entry, evidence)}</dd>" for key, entry in item["states"].items())
             scope = "Required for first release" if item["Scope"] == "first-release" else "Deferred from first release; retained in the full goal"
             score = "Earns one point" if item["done"] else "No completed point yet"
             notes = "".join(f'<p><strong>{label}:</strong> {inline(item[key])}</p>'
@@ -211,7 +218,7 @@ def render(path):
         works = works or '<li>No working behaviour recorded yet.</li>'
         remaining = remaining or ('<li>Every named item earns a completed point.</li>' if done == len(items) else '<li>Unfinished items remain; see their delivery states. Remaining work has not been recorded.</li>')
         noun = "item" if len(items) == 1 else "items"
-        cards.append(f'<section class="section slice-card" id="{anchor}" aria-labelledby="{anchor}-title"><div class="section-head"><div><span class="number">Slice {number:02}</span><h2 id="{anchor}-title">{escape(slice_["title"])}</h2></div><div class="slice-score">{done}/{len(items)}<small>completed items</small></div></div><progress value="{done}" max="{len(items)}" aria-label="{escape(slice_["title"])}: {done} of {len(items)} items complete"></progress><p class="note">{local} additional items pass locally · {progress} in progress.</p><p><strong>Whole-slice acceptance:</strong> {badge(slice_["accepted"])}</p><div class="slice-summary"><div><h3>What works</h3><ul>{works}</ul></div><div><h3>What remains</h3><ul>{remaining}</ul></div></div><div class="acceptance"><strong>What closes this slice</strong>{prose(slice_["Closes"])}</div><details class="checklist-details"><summary>Show all {len(items)} checklist {noun}</summary>{checklist_table}</details></section>')
+        cards.append(f'<section class="section slice-card" id="{anchor}" aria-labelledby="{anchor}-title"><div class="section-head"><div><span class="number">Slice {number:02}</span><h2 id="{anchor}-title">{escape(slice_["title"])}</h2></div><div class="slice-score">{done}/{len(items)}<small>completed items</small></div></div><progress value="{done}" max="{len(items)}" aria-label="{escape(slice_["title"])}: {done} of {len(items)} items complete"></progress><p class="note">{local} additional items pass locally · {progress} in progress.</p><p><strong>Whole-slice acceptance:</strong> {badge(slice_["accepted"], evidence)}</p><div class="slice-summary"><div><h3>What works</h3><ul>{works}</ul></div><div><h3>What remains</h3><ul>{remaining}</ul></div></div><div class="acceptance"><strong>What closes this slice</strong>{prose(slice_["Closes"])}</div><details class="checklist-details"><summary>Show all {len(items)} checklist {noun}</summary>{checklist_table}</details></section>')
 
     table = '<div class="table-wrap"><table class="score-table"><thead><tr><th scope="col">Slice</th><th scope="col">Completed / full goal</th><th scope="col">Additional locally passing</th><th scope="col">In progress</th><th scope="col">Completed / first release</th><th scope="col">Whole-slice acceptance</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table></div>'
     scoring = '<details><summary>How scores work</summary><p>An item earns one point when implemented, published and its local and hosted checks have passed. A check marked “not required” needs evidence explaining why. Partial work earns no point. Deferred work stays in the full-goal count.</p><p>Items differ in size. Counts do not estimate effort, time remaining or release readiness. Whole-slice acceptance, merging and deployment are separate states.</p></details>'
