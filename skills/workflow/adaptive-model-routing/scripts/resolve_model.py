@@ -35,6 +35,7 @@ def resolve(inventory, family):
     if not isinstance(inventory, dict) or not isinstance(inventory.get('models'), list):
         raise RoutingError("An advertised models inventory is required")
     candidates = {}
+    seen = {}
     for entry in inventory['models']:
         if not isinstance(entry, dict):
             raise RoutingError("Invalid model inventory entry")
@@ -43,7 +44,13 @@ def resolve(inventory, family):
         except RoutingError:
             # Unknown IDs and aliases cannot be mistaken for permitted models.
             continue
-        if actual_family != family or entry.get('available') is False:
+        if actual_family != family:
+            continue
+        previous = seen.get(entry['id'])
+        if previous is not None and previous != entry:
+            raise RoutingError("Conflicting metadata for the same model")
+        seen[entry['id']] = entry
+        if entry.get('available') is False:
             continue
         status = entry.get('status', 'stable')
         description = entry.get('description', '')
@@ -51,11 +58,6 @@ def resolve(inventory, family):
             continue
         if OLD.search(description) or PREVIEW.search(description):
             continue
-        if entry.get('is_latest') is False:
-            continue
-        previous = candidates.get(entry['id'])
-        if previous is not None and previous['metadata'] != entry:
-            raise RoutingError("Conflicting metadata for the same model")
         candidates[entry['id']] = {'metadata': entry, 'version': version}
     if not candidates:
         raise RoutingError("No permitted advertised model in the requested family")
@@ -69,6 +71,8 @@ def resolve(inventory, family):
     if len(winners) != 1:
         raise RoutingError("Ambiguous newest model; verify runtime metadata")
     selected = winners[0]['metadata']
+    if selected.get('is_latest') is False:
+        raise RoutingError("Conflicting latest/version metadata")
     return {
         'family': family,
         'model': selected['id'],

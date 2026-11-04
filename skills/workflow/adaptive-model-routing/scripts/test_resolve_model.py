@@ -50,6 +50,39 @@ class ResolverTests(unittest.TestCase):
         inventory = self.inventory({'id': 'gpt-6.1-sol', 'default_reasoning_effort': 'low', 'supported_reasoning_efforts': ['low', 'high']})
         self.assertEqual(resolve(inventory, 'sol')['default_reasoning_effort'], 'low')
 
+    def test_newest_marked_not_latest_blocks_resolution_and_preflight(self):
+        for older_marker in (True, False, None):
+            older = {'id': 'gpt-6.1-sol'}
+            if older_marker is not None:
+                older['is_latest'] = older_marker
+            inventory = self.inventory(older, {'id': 'gpt-6.2-sol', 'is_latest': False})
+            with self.subTest(older_marker=older_marker):
+                with self.assertRaises(RoutingError):
+                    resolve(inventory, 'sol')
+                for model in ('gpt-6.1-sol', 'gpt-6.2-sol'):
+                    with self.assertRaises(RoutingError):
+                        check(inventory, model)
+
+    def test_conflicting_duplicates_block_before_eligibility_filtering(self):
+        for metadata in ({'available': False}, {'status': 'preview'},
+                         {'is_latest': False}, {'description': 'Older generation model'}):
+            eligible = {'id': 'gpt-6.2-sol', 'available': True, 'status': 'stable',
+                        'is_latest': True, 'description': 'Latest model'}
+            conflicting = {**eligible, **metadata}
+            for entries in ((eligible, conflicting), (conflicting, eligible)):
+                inventory = self.inventory(*entries)
+                with self.subTest(metadata=metadata, entries=entries):
+                    with self.assertRaises(RoutingError):
+                        resolve(inventory, 'sol')
+                    with self.assertRaises(RoutingError):
+                        check(inventory, eligible['id'])
+
+    def test_consistent_latest_markers_and_identical_duplicates_are_accepted(self):
+        newest = {'id': 'gpt-6.2-sol', 'is_latest': True}
+        inventory = self.inventory({'id': 'gpt-6.1-sol', 'is_latest': False}, newest, newest.copy())
+        self.assertEqual(resolve(inventory, 'sol')['model'], newest['id'])
+        self.assertEqual(check(inventory, newest['id'])['model'], newest['id'])
+
     def test_other_families_resolve_independently(self):
         inventory = self.inventory('gpt-6-astra', 'gpt-6.1-astra', 'gpt-6-luna')
         self.assertEqual(resolve(inventory, 'astra')['model'], 'gpt-6.1-astra')
