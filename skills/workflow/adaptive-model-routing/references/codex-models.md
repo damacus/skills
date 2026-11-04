@@ -8,11 +8,12 @@ does not establish global availability. Roles below are local routing policy.
 
 | Model identifier | Use when |
 | --- | --- |
+| `gpt-6.1-terra` | Default for most work with a clear goal or direction, including computer use |
 | `gpt-6-luna` | Clear, low-risk work with objective checks |
 | `gpt-6-sol` | Discovery, design, difficult implementation, or diagnosis |
 | `gpt-6-astra` | Exceptional ambiguity, architecture, or consequence |
 
-Terra has no role in this policy, including under low limits. Do not silently
+Use the advertised Terra identifier for the active runtime. Do not silently
 substitute GPT-5.6 identifiers for GPT-6.
 
 ## Price and Performance Evidence
@@ -52,6 +53,7 @@ meet the task's quality requirement, then choose the lowest expected total
 cost among suitable candidates. Do not maximise score per dollar by accepting
 a result below that requirement.
 
+- Use Terra for most work with a clear goal or effective direction.
 - Use Luna when objective verification makes it a reliable owner.
 - Use Sol when its judgement avoids likely retries, rework, or extra review.
 - Compare more effort on a suitable model with a stronger model at its default.
@@ -97,9 +99,11 @@ where quality remains adequate, retain Sol where needed, and ask before Astra.
 Exactly 10% is normal routing; missing values are unknown. API pricing does
 not prove separate allowances or measured Codex usage savings.
 
-- Luna unavailable: use Sol if suitable; Astra only if needed or the only
+- Terra unavailable: use Luna or Sol if suitable; use Astra only if needed,
+  subject to the low-limit approval rule.
+- Luna unavailable: use Terra or Sol if suitable; Astra only if needed or the only
   suitable option, subject to the low-limit approval rule.
-- Sol unavailable: use Luna only if the actual work remains within its
+- Sol unavailable: use Terra or Luna only if the actual work remains within its
   capability; otherwise use Astra, subject to the same approval rule.
 - Astra unavailable: use Sol only if it can reliably meet the requirement.
   Otherwise explain the capability gap and seek a scope or availability decision.
@@ -110,7 +114,7 @@ not prove separate allowances or measured Codex usage savings.
 
 | Situation | Route |
 | --- | --- |
-| Clear multi-file change with objective checks | Luna, default effort |
+| Clear multi-file change with objective checks | Terra, default effort |
 | Unfamiliar code and local design | Sol at its advertised default |
 | Sol fits but needs more reasoning | Consider one effort step before Astra |
 | Consequential ambiguity; weak verification | Astra directly when warranted |

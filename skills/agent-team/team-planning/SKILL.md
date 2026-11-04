@@ -22,6 +22,8 @@ acceptance document.
 Apply `adaptive-model-routing` for all model, effort, usage and escalation
 decisions. Team titles do not determine models. Existing charter role names
 describe responsibilities, not a mandatory standing team.
+Give Terra a clear goal or effective direction, and seek Sol's judgement when
+the work needs more capability.
 
 ## Resolve coordination
 
