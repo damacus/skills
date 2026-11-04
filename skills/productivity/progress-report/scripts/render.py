@@ -6,7 +6,7 @@ import html
 import re
 from pathlib import Path
 from string import Template
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 IDENTIFIER = r"[A-Za-z][A-Za-z0-9_-]*"
@@ -105,12 +105,21 @@ def read_report(path):
             raise ValueError("Expected record title")
         ids.add(record["id"])
     def checked(entry, allowed):
-        if set(entry) != {"status", "evidence_ids"} or not isinstance(entry["evidence_ids"], list):
+        if not isinstance(entry, dict) or set(entry) != {"status", "evidence_ids"} or not isinstance(entry["evidence_ids"], list):
             raise ValueError("States require status and evidence_ids")
-        return state(entry["status"] + "".join(" @" + ref for ref in entry["evidence_ids"]), allowed, evidence)
+        status, references = entry["status"], entry["evidence_ids"]
+        if not isinstance(status, str) or status not in allowed:
+            raise ValueError(f"Invalid state: {status!r}; expected one of {', '.join(sorted(allowed))}")
+        if any(not isinstance(ref, str) or ref not in evidence for ref in references):
+            raise ValueError(f"Unknown evidence reference in: {references!r}")
+        if status in {"complete", "passed", "not-required", "published", "merged", "deployed"} and not references:
+            raise ValueError(f"{status}: add an evidence_ids reference")
+        return status, references
     slices = []
     for row in data["slices"]:
         identify(row)
+        if not isinstance(row["acceptance_criteria"], str) or not row["acceptance_criteria"].strip():
+            raise ValueError(f"{row['id']}: acceptance_criteria must be nonempty text")
         result = {"id":row["id"], "title":row["title"], "Closes":row["acceptance_criteria"], "accepted":checked(row["acceptance"], {"passed","pending","failed"}), "items":[]}
         for item in row["items"]:
             identify(item)
@@ -123,24 +132,11 @@ def read_report(path):
                     raise ValueError("Use text or null for " + key)
             states = {key: checked(item["states"][key.lower().replace(" ","_")], allowed) for key,allowed in STATES.items()}
             done = states["Implementation"][0] == "complete" and states["Publication"][0] == "published" and all(states[key][0] in {"passed","not-required"} for key in ("Local checks","Hosted checks"))
-            result["items"].append({"id":item["id"], "title":item["title"], "Scope":item["scope"], "states":states, "done":done, "Works":item["works"] or "None", "Remaining":item["remaining"] or "None", "Next":item["next_action"] or "None"})
+            result["items"].append({"id":item["id"], "title":item["title"], "Scope":item["scope"], "states":states, "done":done, "Works":item["works"], "Remaining":item["remaining"], "Next":item["next_action"]})
         if not result["items"] or result["accepted"][0] == "passed" and not all(item["done"] for item in result["items"]):
             raise ValueError("Invalid accepted or empty slice")
         slices.append(result)
     return meta, sections, slices, evidence
-
-
-def state(value, allowed, evidence):
-    parts = value.split()
-    status = parts[0]
-    references = [part[1:] for part in parts[1:] if part.startswith("@")]
-    if status not in allowed or len(references) != len(parts) - 1:
-        raise ValueError(f"Invalid state: {value}")
-    if any(reference not in evidence for reference in references):
-        raise ValueError(f"Unknown evidence reference in: {value}")
-    if status in {"complete", "passed", "not-required", "published", "merged", "deployed"} and not references:
-        raise ValueError(f"{value}: add an @evidence reference")
-    return status, references
 
 
 def badge(entry):
@@ -199,7 +195,7 @@ def render(path):
             score = "Earns one point" if item["done"] else "No completed point yet"
             notes = "".join(f'<p><strong>{label}:</strong> {inline(item[key])}</p>'
                             for key, label in [("Works", "What works"), ("Remaining", "Remaining work"), ("Next", "Next action")]
-                            if item[key] != "None")
+                            if item[key] is not None)
             refs = dict.fromkeys(ref for _, references in item["states"].values() for ref in references)
             links = " · ".join(f'<a href="#evidence-{escape(ref)}">{escape(ref)}</a>' for ref in refs)
             if links:
@@ -214,7 +210,7 @@ def render(path):
     sources = section("evidence", "Evidence and limitations", '<details><summary>Sources, release boundary and limitations</summary><ul>' + records + '</ul><h3>Release boundary</h3>' + prose(sections["Release boundary"]) + '<h3>Limitations</h3>' + prose(sections["Limitations"]) + '</details>', "evidence")
     nav = '<a href="#report">Overall position</a><a href="#overview">At a glance</a><span class="nav-label">Slices</span>' + "".join(navigation) + '<span class="nav-label">Completion</span><a href="#evidence">Evidence and limitations</a>'
     return Template((ROOT / "assets/report.html").read_text(encoding="utf-8")).substitute(
-        page_title=escape(f"{meta['project']} — {meta['report']}"), project=escape(meta["project"]), data_source=url(path.name),
+        page_title=escape(f"{meta['project']} — {meta['report']}"), project=escape(meta["project"]), data_source=url(quote(path.name, safe="")),
         report_name=escape(meta["report"]), headline=escape(meta["headline"]), updated=escape(meta["updated"]),
         overview=prose(sections["Overview"]), styles="\n".join((ROOT / name).read_text(encoding="utf-8") for name in ["assets/report.css", "assets/checklist.css"]),
         navigation=nav, content=overview + "".join(cards) + sources)
@@ -223,9 +219,18 @@ def render(path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path, help="Authoritative JSON report")
-    parser.add_argument("output", type=Path, help="Standalone HTML output")
+    parser.add_argument("output", type=Path, nargs="?", help="Standalone HTML output")
+    parser.add_argument("--check", action="store_true", help="Validate JSON and template rendering without writing HTML")
     args = parser.parse_args()
+    if args.check and args.output is not None:
+        parser.error("--check does not accept an output path")
+    if not args.check and args.output is None:
+        parser.error("provide an output path or use --check")
     try:
+        if args.check:
+            render(args.input)
+            print(f"Valid report: {args.input}")
+            return
         if args.input.resolve() == args.output.resolve():
             raise ValueError("Input and output must be different files")
         if args.input.parent.resolve() != args.output.parent.resolve():

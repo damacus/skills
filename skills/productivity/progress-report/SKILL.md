@@ -28,9 +28,11 @@ explicit evidence snapshot time and expandable checklists.
 5. Keep `headline` brief and `summary` to one short sentence. Put detailed work,
    remaining tasks and next actions in checklist items, once. Do not add repeated
    “What works”, “What remains”, “What closes this slice” or next-action sections.
-6. Render with JSON and HTML beside each other:
+6. Validate without changing the existing HTML, then render with JSON and HTML
+   beside each other. Resolve script paths relative to this skill's directory:
 
    ```sh
+   python3 scripts/render.py /absolute/path/report.json --check
    python3 scripts/render.py /absolute/path/report.json /absolute/path/report.html
    ```
 
@@ -41,6 +43,25 @@ explicit evidence snapshot time and expandable checklists.
 For an existing Markdown report, convert its records to the documented JSON
 shape, preserve IDs and dated evidence, compare scores, then retire Markdown as
 an active input. Keep the old file only as a labelled historical archive.
+
+## Agent update contract
+
+Give every agent the JSON path and this skill's path. Use this instruction in
+the task brief, including for Luna and SWE:
+
+> Read the progress-report skill and the existing report JSON. Edit only the
+> assigned records in JSON; preserve IDs, scope and evidence times. Use exact
+> status values and separate `evidence_ids` arrays. Use JSON `null` for missing
+> prose. Do not edit HTML, CSS, templates or calculated totals. Run the bundled
+> `scripts/render.py REPORT.json --check` and fix any reported error. Report
+> changed IDs and the validation result to the report owner.
+
+Use one report owner to apply updates and render the final HTML. When several
+agents work concurrently, have them return proposed record updates to that
+owner rather than write the shared file. This does not authorise delegation.
+The owner uses the bundled template unchanged and inspects the generated report.
+Validation checks structure and references; the owner still checks whether the
+evidence supports each claimed state. Never edit generated HTML to fix data.
 
 ## Scoring and delivery states
 

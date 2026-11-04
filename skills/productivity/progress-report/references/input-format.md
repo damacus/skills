@@ -2,6 +2,10 @@
 
 Use [the complete example](../examples/example.json). JSON is the sole editable
 data source; HTML is generated. Keep both files in the same directory.
+Copy the example for a new report, replace its fictional records and evidence,
+then run `python3 scripts/render.py REPORT.json --check` from the skill directory.
+This validates the input and template without writing an output file. Render
+with `python3 scripts/render.py REPORT.json REPORT.html` after validation.
 
 ## Top-level fields
 
@@ -27,6 +31,7 @@ scoring and is not automatically shown.
 
 Each slice has `id`, `title`, `acceptance`, `acceptance_criteria` and a nonempty
 `items` array. Acceptance is a state object with status passed, pending or failed.
+Acceptance criteria must be nonempty text.
 Every slice and item ID must be unique across the report and match
 `[A-Za-z][A-Za-z0-9_-]*`.
 
@@ -56,6 +61,8 @@ All references must resolve in `evidence`. Complete, passed, not-required,
 published, merged and deployed require at least one reference. Other states may
 use an empty array. A passed slice needs every item to earn a point, plus its
 separate acceptance evidence. Do not store a `done` flag or manual score.
+Status must be an exact value from the table: `complete @foundation` is invalid.
+Evidence IDs belong only in `evidence_ids`, as individual identifier strings.
 
 ## Evidence and prose
 
@@ -72,3 +79,5 @@ Prose supports paragraphs, simple lists, bold, inline code and Markdown links.
 HTML is escaped. Keep each fact in its item; the template does not repeat item
 work/remaining/next prose outside the expandable checklist. Evidence and release
 limitations have their own collapsed disclosure.
+The literal string `"None"` is displayed as text; only JSON `null` omits a note.
+Filenames in the generated JSON data link are URL-encoded, including `#` and `?`.
