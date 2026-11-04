@@ -1,80 +1,130 @@
-# Runtime Guidance
+# Codex Model Mapping
 
-Read the sections needed for the current dispatch or reuse decision.
+Use only models and reasoning efforts advertised by the active runtime.
+Revalidate metadata at routing decisions. Availability in one task or account
+does not establish global availability. Roles below are local routing policy.
 
-## Model resolution
+## GPT-6 Roles
 
-Family names are policy labels, not API aliases. Obtain current model IDs,
-descriptions, availability, release status and supported/default efforts from
-the target tool and host. Do not reuse another host's inventory or old prices,
-benchmarks or defaults.
+| Model identifier | Use when |
+| --- | --- |
+| `gpt-6.1-terra` | Default for most work with a clear goal or direction, including computer use |
+| `gpt-6-luna` | Clear, low-risk work with objective checks |
+| `gpt-6-sol` | Discovery, design, difficult implementation, or diagnosis |
+| `gpt-6-astra` | Exceptional ambiguity, architecture, or consequence |
 
-Exclude Sol 6.0 (`gpt-6-sol`, `gpt-6.0-sol` and equivalent aliases), retired,
-deprecated, legacy, previous-generation, older, preview, experimental and beta
-models. Exclusions also apply to fallbacks, inheritance and cached agents.
+Use the advertised Terra identifier for the active runtime. Do not silently
+substitute GPT-5.6 identifiers for GPT-6.
 
-Pass the advertised inventory as JSON on stdin to the bundled helper:
+## Price and Performance Evidence
 
-```text
-python3 scripts/resolve_model.py --family terra
-python3 scripts/resolve_model.py --check-model ACTUAL_ADVERTISED_MODEL_ID
-```
+Source: OpenAI's [GPT-6 Sol and Luna announcement][announcement], checked
+22 September 2026. These are published evaluation points, not measurements of
+this user's repositories or Codex quota consumption.
 
-Input is `{"models": [...]}`. Entries require `id` and may include
-`description`, `status`, `available`, `is_latest`, `default_reasoning_effort`
-and `supported_reasoning_efforts`. Copy runtime metadata; do not invent it.
-The helper supports canonical numeric GPT family IDs. Other naming schemes
-need verified canonical metadata and a helper update.
+| GPT-6 model | Input per million tokens | Output per million tokens |
+| --- | ---: | ---: |
+| Luna | $0.10 | $0.50 |
+| Sol | $2 | $10 |
 
-The helper compares eligible stable versions numerically. Contradictory
-duplicate metadata, conflicting latest markers or ambiguous versions block
-selection. It rejects superseded IDs during preflight. Missing inventory
-blocks selection too; continue independent authorised work where possible.
+Sol's input and output rates are half its GPT-5.6 rates. At equal token counts,
+Luna costs one twentieth as much as Sol. Actual completion costs depend on
+token use, caching, reasoning, retries, tools, and review.
 
-Recheck at later routing decisions. Never dispatch new work to an excluded or
-superseded agent. Switching or replacing it still requires existing authority.
+Selected points from the announcement's price/performance comparisons:
 
-## Tool settings
+| Evaluation | Published result |
+| --- | --- |
+| AutomationBench: Sol `xhigh` | 33.2%, $0.27/task |
+| AutomationBench: Astra `low` | 30.3%, 3.9 times Sol's cost |
+| DeepSWE 1.1 | Sol `max`: 68.8%; Luna `max`: 66.6% |
 
-Inspect omission and fork semantics. Omit model only after verifying the
-parent's exact ID. Omit effort only if that uses the selected model's default;
-otherwise pass its advertised default explicitly. If no default is exposed,
-retain a known supported setting and disclose the uncertainty.
+These results support considering higher-effort Sol before lower-effort Astra,
+and keeping Luna eligible for substantial coding. They do not establish that
+Sol always beats Astra or that Luna matches Sol on every task. Different
+benchmarks, tools, and effort settings are not interchangeable.
 
-Select `default` tier explicitly when omission inherits `priority`. Verify
-`thread_settings_applied.thread_settings.service_tier` where available.
-Missing tier evidence remains unknown. A priority-only tool cannot satisfy
-normal routing without explicit Fast approval for that work. Global config
-neither proves nor changes an existing session's tier.
+[announcement]: https://openai.com/index/introducing-gpt-6-sol-and-luna/
 
-## Usage evidence
+## How to Use the Cost/Performance Curve
 
-Use applicable `rateLimitsByLimitId` buckets, falling back to legacy
-`rateLimits` when applicable mapped data is unavailable. Inspect all applicable
-windows; exclude unrelated model-specific buckets. Remaining percentage is
-`max(0, min(100, 100 - usedPercent))`.
+Treat the published curve as an initial estimate. Select a candidate that can
+meet the task's quality requirement, then choose the lowest expected total
+cost among suitable candidates. Do not maximise score per dollar by accepting
+a result below that requirement.
 
-A known window below 10% triggers conservation even if another is unknown.
-If none is known to be low, retain normal routing and disclose missing data.
-Restore normal routing at the next decision after recovery. API prices do not
-establish Codex allowance consumption or separate model allowances.
+- Use Terra for most work with a clear goal or effective direction.
+- Use Luna when objective verification makes it a reliable owner.
+- Use Sol when its judgement avoids likely retries, rework, or extra review.
+- Compare more effort on a suitable model with a stronger model at its default.
+  The AutomationBench comparison makes this worthwhile; it is not a universal
+  crossover threshold for coding or other work.
+- Use Astra directly when the consequence or ambiguity requires it.
+- For repeated workloads, compare representative completions using the same
+  acceptance checks. Include failures, retries, latency, and review costs.
+  Do not create a benchmark project for a one-off routing choice.
 
-In the existing usage record, retain session/parent IDs, agent name/path and
-timestamped model, effort and tier changes. Use recorded settings evidence;
-do not infer historic settings from today's config. Track token deltas with
-cached and uncached input separately. Cached input is part of input; reasoning
-tokens are part of output. Do not sum cumulative snapshots or infer actual
-charges from settings and token totals.
+## Reasoning Defaults and Tool Semantics
 
-## Availability fallbacks
+Use the selected model's advertised default unless a user choice or concrete
+task evidence justifies an override. Do not infer defaults from the effort
+used in published evaluations.
 
-- Terra or Luna unavailable: use the other or Sol when suitable.
-- Sol unavailable: use Terra or Luna only if quality remains adequate.
+Runtime snapshot on 22 September 2026: the sub-agent tool advertises `medium`
+as the default for all three GPT-6 models. Luna supports `low`, `medium`,
+`high`, `xhigh`, and `max`; Sol and Astra additionally support `ultra`.
+This snapshot is not a permanent default or a global API support claim.
+
+Check the actual tool before setting or omitting effort:
+
+- The sub-agent tool can inherit parent model and effort when omitted. If an
+  authorised delegation needs a different model, follow its fork constraints
+  and explicitly select the advertised default effort when inheritance would
+  carry over an inappropriate setting.
+- Existing-task tools may keep current settings on omission. Preserve an
+  explicit user choice; do not describe retained effort as a model default.
+- If the tool uses the selected model's default on omission, omit effort.
+- If a required default is unknown, retain a known supported setting, state
+  the uncertainty, and avoid inventing metadata.
+
+A routing recommendation does not itself change the running model. Use a
+supported selection mechanism only within the user's authorised workflow.
+Do not create another task solely to enact a routing recommendation.
+
+## Usage and Availability
+
+Apply the main skill's usage policy to direct selection, delegation, review,
+and fallback. Below 10% in any known applicable Codex window, prefer Luna only
+where quality remains adequate, retain Sol where needed, and ask before Astra.
+Exactly 10% is normal routing; missing values are unknown. API pricing does
+not prove separate allowances or measured Codex usage savings.
+
+- Terra unavailable: use Luna or Sol if suitable; use Astra only if needed,
+  subject to the low-limit approval rule.
+- Luna unavailable: use Terra or Sol if suitable; Astra only if needed or the only
+  suitable option, subject to the low-limit approval rule.
+- Sol unavailable: use Terra or Luna only if the actual work remains within its
+  capability; otherwise use Astra, subject to the same approval rule.
 - Astra unavailable: use Sol only if it can reliably meet the requirement.
-- Use Astra when needed or the only suitable option; ask first under low limits.
-- No suitable permitted model: report the blocker. Preserve quality, scope
-  and permissions through every fallback.
+  Otherwise explain the capability gap and seek a scope or availability decision.
+- No suitable model: report the limitation. Keep permissions, scope, and
+  acceptance criteria unchanged through every fallback.
 
-Brief the owner with the objective, repository rules, owned paths, prohibited
-actions, acceptance checks and escalation conditions. These can come directly
-from the request; do not create extra handoff documents for clear work.
+## Routing Walkthroughs
+
+| Situation | Route |
+| --- | --- |
+| Clear multi-file change with objective checks | Terra, default effort |
+| Unfamiliar code and local design | Sol at its advertised default |
+| Sol fits but needs more reasoning | Consider one effort step before Astra |
+| Consequential ambiguity; weak verification | Astra directly when warranted |
+| Local design; exactly 10% remains | Sol, normal routing |
+| Local design; 9.9% remains | Keep Sol if Luna cannot meet required quality |
+| Clear task; 9.9% remains | Luna; avoid redundant agents and reviews |
+| Astra needed; 9.9% remains | Ask before selecting Astra |
+| Applicable windows show 50% and 9% | Conserve usage; ask before Astra |
+| Codex shows 50%; unrelated bucket shows 1% | Normal routing |
+| One window at 9%; another unknown | Conserve usage; disclose missing data |
+| All applicable usage unavailable | Normal routing; disclose unknown usage |
+| Limits recover from 9% to 10% | Restore normal routing at next decision |
+| Astra unavailable; Sol insufficient | Report gap; preserve required quality |
