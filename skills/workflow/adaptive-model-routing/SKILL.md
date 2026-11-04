@@ -2,7 +2,7 @@
 name: adaptive-model-routing
 description: >-
   Choose and revise Codex model and reasoning effort for engineering work. Use
-  when deciding between GPT-6 Luna, Sol, and Astra; balancing quality, cost, and
+  when deciding between Terra, Luna, Sol, and Astra; balancing quality, cost, and
   latency; assigning end-to-end work or bounded subtasks; planning a model
   handoff; or escalating after uncertainty, risk, or failed attempts increase.
   Apply at the start of substantial work and whenever its shape changes.
@@ -22,8 +22,7 @@ final report end to end.
 
 Read [references/codex-models.md](references/codex-models.md) for GPT-6 model
 identifiers, price/performance evidence, effort handling, and fallbacks. Use
-only models and efforts advertised by the active runtime. Terra is retired
-from this routing policy, including low-limit and availability fallbacks.
+only models and efforts advertised by the active runtime.
 
 ## Core Workflow
 
@@ -43,6 +42,9 @@ task length alone does not justify a stronger model or higher effort.
 
 ### 2. Choose the Initial Route
 
+- Use **Terra** by default for most work when given a clear goal or effective
+  direction, including computer use. Let it own suitable work end to end and
+  seek Sol's judgement when it needs more capability or cannot make reliable progress.
 - Use **GPT-6 Luna** for clear, low-risk work with established patterns and
   objective checks. This includes substantial implementation when the work
   remains well specified and correctness is cheap to verify.
@@ -143,7 +145,8 @@ Reassess the model, effort, or need for review when:
   destructive operations, deployment control, or irreversible data is involved.
 - Integration reveals conflicting edits or a cross-task architectural decision.
 
-Usually move Luna to Sol, Sol to Astra, or adjust effort within the current
+Move Terra or Luna to Sol when more judgement is needed, Sol to Astra when
+its additional capability is warranted, or adjust effort within the current
 model. Identify what the change should resolve and verify that it did. Do not
 repeat identical attempts. Ask before Astra under low limits. Return clarified,
 objectively testable work to a cheaper model when the saving exceeds handoff
@@ -164,7 +167,6 @@ cost. Keep the current owner when switching would add more overhead than value.
 - Raising effort because of file count, model prestige, or benchmark settings.
 - Treating every model's default as `medium` without checking the runtime.
 - Requiring a stronger model at both ends of every Luna task.
-- Reintroducing Terra as a quota or availability fallback.
 - Treating missing usage as zero or exactly 10% remaining as low.
 - Selecting Astra below 10% without approval, or inferring quota savings from
   API prices.

@@ -1,0 +1,17 @@
+name: Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: rvben/rumdl@v0
+        with:
+          version: "0.3.2"
+          install-only: true
+      - uses: arduino/setup-task@v2
+      - run: task test
