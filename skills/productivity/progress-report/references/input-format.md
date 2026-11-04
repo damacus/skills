@@ -76,8 +76,11 @@ temporary signed URLs. Prefer durable references. The note states exactly what
 was checked; never reuse an old passing run for changed work without justification.
 
 Prose supports paragraphs, simple lists, bold, inline code and Markdown links.
-HTML is escaped. Keep each fact in its item; the template does not repeat item
-work/remaining/next prose outside the expandable checklist. Evidence and release
-limitations have their own collapsed disclosure.
+HTML is escaped. Author each fact once in its item. The formatter derives visible
+working/remaining summaries, acceptance criteria and consolidated next actions
+from those records, alongside the expandable checklists. Release boundaries
+and limitations remain visible in their own sections; source evidence expands
+on demand. Navigation adapts from a sticky sidebar to a collapsible narrow-screen
+menu. Scores and checklist rows reflow into labelled cards on smaller screens.
 The literal string `"None"` is displayed as text; only JSON `null` omits a note.
 Filenames in the generated JSON data link are URL-encoded, including `#` and `?`.

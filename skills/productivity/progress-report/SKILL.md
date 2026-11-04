@@ -25,9 +25,11 @@ explicit evidence snapshot time and expandable checklists.
 4. Update delivery states only from evidence, retaining its observation time,
    revision and source. Set the timezone-qualified `snapshot_at` and
    `snapshot_timezone`. Reformatting or rendering does not refresh evidence.
-5. Keep `headline` brief and `summary` to one short sentence. Put detailed work,
-   remaining tasks and next actions in checklist items, once. Do not add repeated
-   “What works”, “What remains”, “What closes this slice” or next-action sections.
+5. Keep `headline` brief and `summary` to one short sentence. Author work,
+   remaining tasks and next actions once in the item records. The formatter
+   derives the slice summaries and consolidated next actions from those records.
+   Simplify authoring, not the report's features: preserve navigation, scores,
+   working behaviour, remaining work, acceptance criteria and evidence access.
 6. Validate without changing the existing HTML, then render with JSON and HTML
    beside each other. Resolve script paths relative to this skill's directory:
 
@@ -36,9 +38,11 @@ explicit evidence snapshot time and expandable checklists.
    python3 scripts/render.py /absolute/path/report.json /absolute/path/report.html
    ```
 
-7. Open the HTML. Inspect desktop and narrow layouts, expand a checklist and
-   inspect print behaviour when supported. State any preview limitation. Keep
-   source evidence and limitations in their disclosure, not the preamble.
+7. Open the HTML. Inspect desktop, tablet and narrow layouts. Check the sticky
+   sidebar on desktop and the collapsible navigation on mobile. Expand a
+   checklist, follow an item/evidence link and inspect print behaviour when
+   supported. Use a long report as well as the short example: every sidebar
+   link must remain reachable. State any preview limitation.
 
 For an existing Markdown report, convert its records to the documented JSON
 shape, preserve IDs and dated evidence, compare scores, then retire Markdown as
@@ -85,12 +89,17 @@ scope. Deferred full-goal work stays visible; counts do not declare release read
   fields, IDs, states, snapshot time and evidence references.
 - [Template](assets/report.html), [styles](assets/report.css) and
   [checklist styles](assets/checklist.css): sidebar, scores, expandable checklist
-  tables, responsive layout and print expansion. Detailed delivery states remain
-  inside each checklist. Slice acceptance criteria are nested there too.
+  tables, adaptive score cards and print expansion. Whole-slice acceptance,
+  working behaviour, remaining work and acceptance criteria stay visible.
+  Detailed delivery states expand inside each checklist. Release boundaries,
+  scoring guidance, consolidated next actions and evidence remain accessible
+  from the navigation. Wide layouts retain the sidebar; narrow layouts use a
+  collapsible menu and stack scores and checklist rows without sideways scrolling.
 - [JSON example](examples/example.json) and [HTML example](examples/example.html):
   fictional data demonstrating the format.
 - [Retained historical design](references/medtracker-migration-status.html):
-  historical reference only; its verbose sections are not the current template.
+  design reference with historical facts. Preserve its useful features when
+  changing the formatter; do not treat its figures as current evidence.
 
 Do not add a report-generator test suite or testing project. Render the example
 and inspect the result. Check representative invalid inputs with the renderer.

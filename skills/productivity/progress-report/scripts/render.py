@@ -174,7 +174,8 @@ def section(id_, title, body, kind="summary"):
 
 def render(path):
     meta, sections, slices, evidence = read_report(path)
-    rows, cards, navigation = [], [], []
+    rows, cards, navigation, actions = [], [], [], []
+    accepted = sum(slice_["accepted"][0] == "passed" for slice_ in slices)
     for number, slice_ in enumerate(slices, 1):
         items = slice_["items"]
         done = sum(item["done"] for item in items)
@@ -186,7 +187,7 @@ def render(path):
         name = f"{number:02}. {escape(slice_['title'])}"
         link = f'<a href="#{anchor}">{name}</a>'
         navigation.append(link)
-        rows.append(f"<tr><th scope=\"row\">{link}</th><td><strong>{done}/{len(items)}</strong></td><td>{local}</td><td>{progress}</td><td>{release_done}/{len(required)}</td><td>{badge(slice_['accepted'])}</td></tr>")
+        rows.append(f'<tr><th scope="row">{link}</th><td data-label="Completed / full goal"><strong>{done}/{len(items)}</strong></td><td data-label="Additional locally passing">{local}</td><td data-label="In progress">{progress}</td><td data-label="Completed / first release">{release_done}/{len(required)}</td><td data-label="Whole-slice acceptance">{badge(slice_["accepted"])}</td></tr>')
         checklist = []
         for item in items:
             item_anchor = f"item-{item['id']}"
@@ -201,19 +202,32 @@ def render(path):
             if links:
                 notes += f'<p class="note">Evidence: {links}</p>'
             checklist.append(f'<tr id="{item_anchor}"><th scope="row">{escape(item["id"])}: {escape(item["title"])}<p class="note">{scope}</p></th><td>{item_badge(item)}<p class="note">{score}</p><details class="delivery-details"><summary>Delivery states</summary><dl class="delivery">{delivery}</dl></details></td><td>{notes}</td></tr>')
+            if item["Remaining"] is not None or item["Next"] is not None:
+                action_notes = "".join(f'<p><strong>{label}:</strong> {inline(item[key])}</p>' for key, label in [("Remaining", "Remaining work"), ("Next", "Next action")] if item[key] is not None)
+                actions.append(f'<li><a href="#{item_anchor}">{escape(item["title"])}</a><span class="note"> · {scope}</span>{action_notes}</li>')
         checklist_table = '<div class="table-wrap"><table class="checklist"><thead><tr><th scope="col">Item</th><th scope="col">State</th><th scope="col">Evidence or remaining work</th></tr></thead><tbody>' + "".join(checklist) + '</tbody></table></div>'
-        cards.append(f'<section class="section slice-card" id="{anchor}" aria-labelledby="{anchor}-title"><div class="section-head"><div><span class="number">Slice {number:02}</span><h2 id="{anchor}-title">{escape(slice_["title"])}</h2></div><div class="slice-score">{done}/{len(items)}<small>completed items</small></div></div><progress value="{done}" max="{len(items)}" aria-label="{escape(slice_["title"])}: {done} of {len(items)} items complete"></progress><p class="note">Acceptance: {badge(slice_["accepted"])}</p><details><summary>Show all {len(items)} checklist items</summary>{checklist_table}<details><summary>Slice acceptance criteria</summary>{prose(slice_["Closes"])}</details></details></section>')
+        works = "".join(f'<li><strong>{escape(item["title"])}:</strong> {inline(item["Works"])}</li>' for item in items if item["Works"] is not None)
+        remaining = "".join(f'<li><strong>{escape(item["title"])}:</strong> {inline(item["Remaining"])}</li>' for item in items if item["Remaining"] is not None)
+        works = works or '<li>No working behaviour recorded yet.</li>'
+        remaining = remaining or ('<li>Every named item earns a completed point.</li>' if done == len(items) else '<li>Unfinished items remain; see their delivery states. Remaining work has not been recorded.</li>')
+        noun = "item" if len(items) == 1 else "items"
+        cards.append(f'<section class="section slice-card" id="{anchor}" aria-labelledby="{anchor}-title"><div class="section-head"><div><span class="number">Slice {number:02}</span><h2 id="{anchor}-title">{escape(slice_["title"])}</h2></div><div class="slice-score">{done}/{len(items)}<small>completed items</small></div></div><progress value="{done}" max="{len(items)}" aria-label="{escape(slice_["title"])}: {done} of {len(items)} items complete"></progress><p class="note">{local} additional items pass locally · {progress} in progress.</p><p><strong>Whole-slice acceptance:</strong> {badge(slice_["accepted"])}</p><div class="slice-summary"><div><h3>What works</h3><ul>{works}</ul></div><div><h3>What remains</h3><ul>{remaining}</ul></div></div><div class="acceptance"><strong>What closes this slice</strong>{prose(slice_["Closes"])}</div><details class="checklist-details"><summary>Show all {len(items)} checklist {noun}</summary>{checklist_table}</details></section>')
 
-    table = '<div class="table-wrap"><table><thead><tr><th scope="col">Slice</th><th scope="col">Completed / full goal</th><th scope="col">Additional locally passing</th><th scope="col">In progress</th><th scope="col">Completed / first release</th><th scope="col">Whole-slice acceptance</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table></div>'
-    overview = section("overview", "At a glance", table)
+    table = '<div class="table-wrap"><table class="score-table"><thead><tr><th scope="col">Slice</th><th scope="col">Completed / full goal</th><th scope="col">Additional locally passing</th><th scope="col">In progress</th><th scope="col">Completed / first release</th><th scope="col">Whole-slice acceptance</th></tr></thead><tbody>' + "".join(rows) + '</tbody></table></div>'
+    scoring = '<details><summary>How scores work</summary><p>An item earns one point when implemented, published and its local and hosted checks have passed. A check marked “not required” needs evidence explaining why. Partial work earns no point. Deferred work stays in the full-goal count.</p><p>Items differ in size. Counts do not estimate effort, time remaining or release readiness. Whole-slice acceptance, merging and deployment are separate states.</p></details>'
+    overview = section("overview", "At a glance", f'<p><strong>{accepted}/{len(slices)} whole slices accepted.</strong></p>' + table + scoring)
+    boundary = section("release", "First release and the full goal", prose(sections["Release boundary"]))
+    all_done = all(item["done"] for slice_ in slices for item in slice_["items"])
+    empty_actions = '<p>Every named item earns a completed point. Check acceptance and deployment before a release decision.</p>' if all_done else '<p>Unfinished items remain. Next actions have not been recorded; see the slice checklists.</p>'
+    next_actions = section("remaining", "Remaining work and next actions", '<ol class="route">' + "".join(actions) + '</ol>' if actions else empty_actions)
     records = "".join(f'<li id="evidence-{escape(id_)}"><strong>{escape(id_)} · {escape(record["title"])}</strong><p>Observed: {escape(record["Observed"])} · Revision: {escape(record["Revision"])}</p><p><a href="{url(record["Source"])}">Open evidence</a> · {inline(record["Note"])}</p></li>' for id_, record in evidence.items())
-    sources = section("evidence", "Evidence and limitations", '<details><summary>Sources, release boundary and limitations</summary><ul>' + records + '</ul><h3>Release boundary</h3>' + prose(sections["Release boundary"]) + '<h3>Limitations</h3>' + prose(sections["Limitations"]) + '</details>', "evidence")
-    nav = '<a href="#report">Overall position</a><a href="#overview">At a glance</a><span class="nav-label">Slices</span>' + "".join(navigation) + '<span class="nav-label">Completion</span><a href="#evidence">Evidence and limitations</a>'
+    sources = section("evidence", "Evidence and limitations", '<h3>Limitations</h3>' + prose(sections["Limitations"]) + '<details><summary>Source evidence</summary><ul>' + records + '</ul></details>', "evidence")
+    nav = '<a href="#report">Overall position</a><a href="#overview">At a glance</a><a href="#release">First release and full goal</a><span class="nav-label">Slices</span>' + "".join(navigation) + '<span class="nav-label">Completion</span><a href="#remaining">Remaining work and next actions</a><a href="#evidence">Evidence and limitations</a>'
     return Template((ROOT / "assets/report.html").read_text(encoding="utf-8")).substitute(
         page_title=escape(f"{meta['project']} — {meta['report']}"), project=escape(meta["project"]), data_source=url(quote(path.name, safe="")),
         report_name=escape(meta["report"]), headline=escape(meta["headline"]), updated=escape(meta["updated"]),
         overview=prose(sections["Overview"]), styles="\n".join((ROOT / name).read_text(encoding="utf-8") for name in ["assets/report.css", "assets/checklist.css"]),
-        navigation=nav, content=overview + "".join(cards) + sources)
+        navigation=nav, content=overview + boundary + "".join(cards) + next_actions + sources)
 
 
 def main():
