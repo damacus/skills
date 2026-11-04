@@ -114,7 +114,7 @@ not prove separate allowances or measured Codex usage savings.
 
 | Situation | Route |
 | --- | --- |
-| Clear multi-file change with objective checks | Luna, default effort |
+| Clear multi-file change with objective checks | Terra, default effort |
 | Unfamiliar code and local design | Sol at its advertised default |
 | Sol fits but needs more reasoning | Consider one effort step before Astra |
 | Consequential ambiguity; weak verification | Astra directly when warranted |
