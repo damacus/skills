@@ -11,13 +11,19 @@ class ResolverTests(unittest.TestCase):
         self.assertEqual(resolve(available, 'sol')['model'], 'gpt-6.1-sol')
 
     def test_exclusions_cover_explicit_inherited_and_fallback_checks(self):
-        for model in ('gpt-6-sol', 'gpt-6.0-sol', 'gpt-6.0.2-sol', 'gpt-5.6-terra', 'gpt-9-terra'):
+        for model in ('gpt-6-sol', 'gpt-6.0-sol', 'gpt-6.0.2-sol'):
             with self.subTest(model=model), self.assertRaises(RoutingError):
                 check(self.inventory(model), model)
         with self.assertRaises(RoutingError):
             resolve(self.inventory('gpt-6-sol', 'gpt-6.0-sol'), 'sol')
+
+    def test_terra_resolution_and_preflight_use_latest_stable_release(self):
+        inventory = self.inventory('gpt-6-terra', 'gpt-6.1-terra',
+                                   {'id': 'gpt-7-terra', 'status': 'preview'})
+        self.assertEqual(resolve(inventory, 'terra')['model'], 'gpt-6.1-terra')
+        self.assertEqual(check(inventory, 'gpt-6.1-terra')['model'], 'gpt-6.1-terra')
         with self.assertRaises(RoutingError):
-            resolve(self.inventory('gpt-9-terra'), 'terra')
+            check(inventory, 'gpt-6-terra')
 
     def test_new_versions_need_no_policy_edit_and_sort_numerically(self):
         self.assertEqual(resolve(self.inventory('gpt-6.9-sol', 'gpt-6.10-sol'), 'sol')['model'], 'gpt-6.10-sol')

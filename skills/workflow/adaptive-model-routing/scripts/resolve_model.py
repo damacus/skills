@@ -22,16 +22,14 @@ def identity(identifier):
         raise RoutingError("No verified canonical numeric family ID")
     version = tuple(int(part) for part in match[1].split('.'))
     family = match[2]
-    if family == 'terra':
-        raise RoutingError("Terra is excluded")
     if family == 'sol' and (version + (0,))[0:2] == (6, 0):
         raise RoutingError("Sol 6.0 is excluded")
     return family, version
 
 
 def resolve(inventory, family):
-    if family not in ('luna', 'sol', 'astra'):
-        raise RoutingError("Family must be Luna, Sol or Astra")
+    if family not in ('terra', 'luna', 'sol', 'astra'):
+        raise RoutingError("Family must be Terra, Luna, Sol or Astra")
     if not isinstance(inventory, dict) or not isinstance(inventory.get('models'), list):
         raise RoutingError("An advertised models inventory is required")
     candidates = {}
@@ -92,7 +90,7 @@ def check(inventory, model):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--family', choices=['luna', 'sol', 'astra'])
+    group.add_argument('--family', choices=['terra', 'luna', 'sol', 'astra'])
     group.add_argument('--check-model')
     args = parser.parse_args()
     try:

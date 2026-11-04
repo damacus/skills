@@ -2,7 +2,7 @@
 name: adaptive-model-routing
 description: >-
   Choose and revise Codex model and reasoning effort for engineering work. Use
-  when deciding between the Luna, Sol, and Astra families; balancing quality, cost, and
+  when deciding between Terra, Luna, Sol, and Astra; balancing quality, cost, and
   latency; assigning end-to-end work or bounded subtasks; planning a model
   handoff; or escalating after uncertainty, risk, or failed attempts increase.
   Apply at the start of substantial work and whenever its shape changes.
@@ -24,7 +24,7 @@ Read [references/codex-models.md](references/codex-models.md) for runtime family
 resolution, exclusions, effort handling and fallbacks. Resolve the latest
 permitted stable model in the chosen family from the target runtime metadata
 at each decision; use the checked `scripts/resolve_model.py` helper. Family
-labels are not API aliases. Every Terra model and Sol 6.0 are excluded from
+labels are not API aliases. Sol 6.0 is excluded from
 normal routing, fallbacks, inherited defaults and reuse of existing agents.
 Never send new work to an excluded model, even if it is advertised or cached
 in an old instruction. Do not invent a latest alias or fall back to a remembered
@@ -48,6 +48,10 @@ task length alone does not justify a stronger model or higher effort.
 
 ### 2. Choose the Initial Route
 
+- Use **latest permitted Terra** by default for most work when given a clear
+  goal or effective direction, including computer use. Let it own suitable work
+  end to end and seek Sol's judgement when it needs more capability or cannot
+  make reliable progress.
 - Use **latest permitted Luna** for clear, low-risk work with established
   patterns and objective checks. This includes substantial implementation when
   the work remains well specified and correctness is cheap to verify.
@@ -144,8 +148,9 @@ applicable windows and exclude unrelated model-specific buckets. Remaining
 percent is `max(0, min(100, 100 - usedPercent))`.
 
 - Below **10% remaining** in any known applicable window, conserve usage:
-  prefer Luna wherever it can meet the same quality standard, retain Sol when
-  its judgement is needed, and avoid unnecessary agents and repeated reviews.
+  prefer Terra or Luna wherever either can meet the same quality standard,
+  retain Sol when its judgement is needed, and avoid unnecessary agents and
+  repeated reviews.
   Ask before selecting Astra, including for review or availability fallback.
 - At exactly 10% or above in every reported applicable window, use normal
   routing. Restore it at the next routing decision after recovery.
@@ -192,7 +197,8 @@ Reassess the model, effort, or need for review when:
   destructive operations, deployment control, or irreversible data is involved.
 - Integration reveals conflicting edits or a cross-task architectural decision.
 
-Usually move Luna to Sol, Sol to Astra, or adjust effort within the current
+Move Terra or Luna to Sol when more judgement is needed, Sol to Astra when
+its additional capability is warranted, or adjust effort within the current
 model. Identify what the change should resolve and verify that it did. Do not
 repeat identical attempts. Ask before Astra under low limits. Return clarified,
 objectively testable work to a cheaper model when the saving exceeds handoff
@@ -213,7 +219,7 @@ cost. Keep the current owner when switching would add more overhead than value.
 - Raising effort because of file count, model prestige, or benchmark settings.
 - Treating every model's default as `medium` without checking the runtime.
 - Requiring a stronger model at both ends of every Luna task.
-- Reintroducing Terra or Sol 6.0 through a fallback, inheritance or cached agent.
+- Reintroducing Sol 6.0 through a fallback, inheritance or cached agent.
 - Pinning a family role to an old model ID or inventing a latest API alias.
 - Inheriting Fast from the caller or extending its Fast approval to other agents.
 - Treating missing usage as zero or exactly 10% remaining as low.
@@ -224,7 +230,7 @@ cost. Keep the current owner when switching would add more overhead than value.
 ## Completion Check
 
 - Did runtime discovery and the resolver verify the exact latest permitted ID?
-- Were Terra, Sol 6.0 and obsolete inherited model choices excluded?
+- Were Sol 6.0 and obsolete inherited model choices excluded?
 - Did the route meet the same quality and verification requirements?
 - Did model choice reflect uncertainty, consequence, and total completion cost?
 - Was normal service used, with explicit approval and verified settings for any

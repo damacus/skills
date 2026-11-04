@@ -6,13 +6,13 @@ API model identifiers. Never send an invented `sol-latest` or similar alias.
 
 | Family role | Use when |
 | --- | --- |
+| Latest permitted Terra | Default for most work with a clear goal or direction, including computer use |
 | Latest permitted Luna | Clear, low-risk work with objective checks |
 | Latest permitted Sol | Discovery, design, implementation and diagnosis |
 | Latest permitted Astra | Exceptional ambiguity, architecture or consequence |
 
 ## Excluded Models
 
-- **Every Terra model**, regardless of generation, alias or availability.
 - **Sol 6.0**, including `gpt-6-sol`, `gpt-6.0-sol` and any alias or pinned
   release whose underlying model is Sol 6.0.
 - Models labelled retired, deprecated, legacy, previous-generation or older.
@@ -100,10 +100,12 @@ applicable allowance window, conserve usage and ask before Astra. Exactly 10%
 uses normal routing; missing usage is unknown. API prices do not establish
 Codex allowance consumption or separate model allowances.
 
-- Luna unavailable: use latest permitted Sol when suitable; Astra only when
-  required or the only suitable family, subject to the low-limit approval rule.
-- Sol unavailable: use latest permitted Luna only when quality remains adequate;
-  otherwise use latest permitted Astra, subject to the same approval rule.
+- Terra unavailable: use latest permitted Luna or Sol when suitable; Astra only
+  when required, subject to the low-limit approval rule.
+- Luna unavailable: use latest permitted Terra or Sol when suitable; Astra only
+  when required or the only suitable family, subject to the low-limit approval rule.
+- Sol unavailable: use latest permitted Terra or Luna only when quality remains
+  adequate; otherwise use latest permitted Astra, subject to the same approval rule.
 - Astra unavailable: use latest permitted Sol only when it can reliably meet
   the requirement. Otherwise explain the capability gap.
 - No suitable permitted model: report the blocker. Exclusions stay in force.

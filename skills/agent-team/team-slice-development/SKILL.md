@@ -22,6 +22,7 @@ established by `migrate`; keep them in the same slice record.
 Read and apply `adaptive-model-routing` and its reference. It alone governs model choice,
 effort, usage checks, fallbacks and escalation. Do not copy its routing tables here or
 assign a model because of a team title. The thread leader is not automatically Astra.
+Give Terra a clear goal or effective direction and seek Sol's judgement when needed.
 
 Normal/default service is required unless the user explicitly approves Fast for
 the specific work. This applies to leaders, implementers and reviewers, especially
