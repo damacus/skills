@@ -85,6 +85,7 @@ detected project and task require.
 
 ### TUI
 
+- **[tui-demo](./skills/tui/tui-demo/SKILL.md)** — Record repeatable terminal demos and export GIFs for GitHub.
 - **[tui-expert](./skills/tui/tui-expert/SKILL.md)**
 
 ### UI
